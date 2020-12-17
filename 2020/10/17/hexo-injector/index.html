@@ -1,0 +1,637 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" type="image/png" href="/img/favicon.png">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="">
+  <meta name="author" content="张凯强">
+  <meta name="keywords" content="">
+  <title>通过 Hexo 5 注入器为主题添加新功能 - 空心in</title>
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.5.3/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/github-markdown-css/4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.staticfile.org/highlight.js/10.1.2/styles/androidstudio.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"ipvb.gitee.io","root":"/","version":"1.8.5","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"copy_btn":true,"image_zoom":{"enable":true},"lazyload":{"enable":true,"onlypost":false},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.2.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>空心in</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/links/">
+                <i class="iconfont icon-link-fill"></i>
+                友链
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" href="javascript:">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner intro-2" id="background" parallax=true
+         style="background: url('/img/post.jpg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="通过 Hexo 5 注入器为主题添加新功能">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2020-10-17 20:00" pubdate>
+        2020年10月17日 晚上
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      1.1k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      16
+       分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-md">
+      <div class="container nopadding-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">通过 Hexo 5 注入器为主题添加新功能</h1>
+            
+            <div class="markdown-body">
+              <h2 id="Hexo-注入器"><a href="#Hexo-注入器" class="headerlink" title="Hexo 注入器"></a>Hexo 注入器</h2><p><a target="_blank" rel="noopener" href="https://hexo.io/zh-cn/api/injector.html">Hexo 注入器</a>是 Hexo 5 版本加入的一项新功能，注入器可以将静态代码片段注入生成的 HTML 的 <code>&lt;head&gt;</code> 和 <code>&lt;body&gt;</code> 中。</p>
+<p>编写注入代码，需要在博客的根目录下创建 <code>scripts</code> 文件夹，然后在里面任意命名创建一个 js 文件即可。</p>
+<p>例如创建一个 <code>/blog/scripts/example.js</code>，内容为：</p>
+<div class="hljs"><pre><code class="hljs xml">hexo.extend.injector.register(&#x27;body_end&#x27;, &#x27;<span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">&quot;/jquery.js&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>&#x27;, &#x27;default&#x27;);</code></pre></div>
+
+<p>上述代码会在生成的页面 <code>&lt;/body&gt;</code> 注入加载 <code>jquery.js</code> 的代码。</p>
+<p><code>register</code> 函数可接受三个参数，第一个参数是代码片段注入的位置，接受以下值：</p>
+<ul>
+<li><code>head_begin</code>: 注入在 <code>&lt;head&gt;</code> 之后（默认）</li>
+<li><code>head_end</code>: 注入在 <code>&lt;/head&gt;</code> 之前</li>
+<li><code>body_begin</code>: 注入在 <code>&lt;body&gt;</code> 之后</li>
+<li><code>body_end</code>: 注入在 <code>&lt;/body&gt;</code> 之前</li>
+</ul>
+<p>第二个参数是注入的片段，可以是字符串，也可以是一个返回值为字符串的函数。</p>
+<p>第三个参数是注入的页面类型，接受以下值：       </p>
+<ul>
+<li><code>default</code>: 注入到每个页面（默认值）</li>
+<li><code>home</code>: 只注入到主页（<code>is_home()</code> 为 <code>true</code> 的页面）</li>
+<li><code>post</code>: 只注入到文章页面（<code>is_post()</code> 为 <code>true</code> 的页面）</li>
+<li><code>page</code>: 只注入到独立页面（<code>is_page()</code> 为 <code>true</code> 的页面）</li>
+<li><code>archive</code>: 只注入到归档页面（<code>is_archive()</code> 为 <code>true</code> 的页面）</li>
+<li><code>category</code>: 只注入到分类页面（<code>is_category()</code> 为 <code>true</code> 的页面）</li>
+<li><code>tag</code>: 只注入到标签页面（<code>is_tag()</code> 为 <code>true</code> 的页面）</li>
+<li>或是其他自定义 layout 名称</li>
+</ul>
+<h2 id="实际案例"><a href="#实际案例" class="headerlink" title="实际案例"></a>实际案例</h2><p>在实际使用中，建议将 js 代码独立成为 js 文件，存放在博客的 <code>source</code> 目录下，然后在 <code>scripts</code> 里通过一个包含 injector 的 js 文件统一引入。</p>
+<p>例如创建一个 <code>/source/js/custom.js</code>，里面包含初始化的代码，然后在 <code>/scripts/injector.js</code> 里写入：</p>
+<div class="hljs"><pre><code class="hljs xquery">hexo.extend.injector.register(<span class="hljs-string">&#x27;body_end&#x27;</span>, `
+  <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">&quot;/js/custom.js&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></span>
+`)</code></pre></div>
+
+<p>以下案例都采用类似的形式，不再赘述。</p>
+<h3 id="APlayer-音乐播放器"><a href="#APlayer-音乐播放器" class="headerlink" title="APlayer 音乐播放器"></a>APlayer 音乐播放器</h3><div class="hljs"><pre><code class="hljs xml">hexo.extend.injector.register(&#x27;body_end&#x27;, `
+  <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;aplayer&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">link</span> <span class="hljs-attr">defer</span> <span class="hljs-attr">rel</span>=<span class="hljs-string">&quot;stylesheet&quot;</span> <span class="hljs-attr">href</span>=<span class="hljs-string">&quot;https://cdn.staticfile.org/aplayer/1.10.1/APlayer.min.css&quot;</span> /&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">&quot;https://cdn.staticfile.org/aplayer/1.10.1/APlayer.min.js&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">defer</span> <span class="hljs-attr">src</span>=<span class="hljs-string">&quot;/js/aplayer.js&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+`);</code></pre></div>
+
+<div class="hljs"><pre><code class="hljs javascript">!(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>&#123;
+  <span class="hljs-keyword">var</span> oldLoadAp = <span class="hljs-built_in">window</span>.onload;
+  <span class="hljs-built_in">window</span>.onload = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>&#123;
+    oldLoadAp &amp;&amp; oldLoadAp();
+
+    <span class="hljs-keyword">new</span> APlayer(&#123;
+      container: <span class="hljs-built_in">document</span>.getElementById(<span class="hljs-string">&#x27;aplayer&#x27;</span>),
+      fixed: <span class="hljs-literal">true</span>,
+      autoplay: <span class="hljs-literal">false</span>,
+      loop: <span class="hljs-string">&#x27;all&#x27;</span>,
+      order: <span class="hljs-string">&#x27;random&#x27;</span>,
+      theme: <span class="hljs-string">&#x27;#b7daff&#x27;</span>,
+      preload: <span class="hljs-string">&#x27;none&#x27;</span>,
+      audio: [
+        &#123;
+          name: <span class="hljs-string">&#x27;song1&#x27;</span>,
+          artist: <span class="hljs-string">&#x27;artist1&#x27;</span>,
+          url: <span class="hljs-string">&#x27;/songs/song1.mp3&#x27;</span>,
+          cover: <span class="hljs-string">&#x27;/img/cover.jpg&#x27;</span>
+        &#125;
+      ]
+    &#125;);
+  &#125;
+&#125;)();</code></pre></div>
+
+<p>更多参数详见 <a target="_blank" rel="noopener" href="https://aplayer.js.org/#/zh-Hans/?id=%E5%8F%82%E6%95%B0">Aplayer 文档</a>。</p>
+<h3 id="DaoVoice-聊天插件"><a href="#DaoVoice-聊天插件" class="headerlink" title="DaoVoice 聊天插件"></a>DaoVoice 聊天插件</h3><p>先在 <a target="_blank" rel="noopener" href="https://daovoice.io/">https://daovoice.io</a> 注册一个账号，按其中的引导获得 appId，然后添加如下代码：</p>
+<div class="hljs"><pre><code class="hljs xquery">hexo.extend.injector.register(<span class="hljs-string">&#x27;body_end&#x27;</span>, `
+  <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">defer</span> <span class="hljs-attr">src</span>=<span class="hljs-string">&quot;/js/daovoice.js&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></span>
+`);</code></pre></div>
+
+<div class="hljs"><pre><code class="hljs javascript">!(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>&#123;
+  <span class="hljs-keyword">var</span> appId = <span class="hljs-string">&#x27;这里填上注册后账号的 appId&#x27;</span>;
+
+  (<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">i, s, o, g, r, a, m</span>) </span>&#123;  
+    i[<span class="hljs-string">&#x27;DaoVoiceObject&#x27;</span>] = r;
+    i[r] = i[r] ||
+      <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>&#123;
+        (i[r].q = i[r].q || []).push(<span class="hljs-built_in">arguments</span>);
+      &#125;;
+    i[r].l = <span class="hljs-number">1</span> * <span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>();
+    a = s.createElement(o);
+    m = s.getElementsByTagName(o)[<span class="hljs-number">0</span>];
+    a.async = <span class="hljs-number">1</span>;
+    a.src = g;
+    a.charset = <span class="hljs-string">&#x27;utf-8&#x27;</span>;
+    m.parentNode.insertBefore(a, m);
+  &#125;)(<span class="hljs-built_in">window</span>, <span class="hljs-built_in">document</span>, <span class="hljs-string">&#x27;script&#x27;</span>, (<span class="hljs-string">&#x27;https:&#x27;</span> === <span class="hljs-built_in">document</span>.location.protocol ? <span class="hljs-string">&#x27;https:&#x27;</span> : <span class="hljs-string">&#x27;http:&#x27;</span>) + <span class="hljs-string">&#x27;//widget.daovoice.io/widget/&#x27;</span> + appId + <span class="hljs-string">&#x27;.js&#x27;</span>, <span class="hljs-string">&#x27;daovoice&#x27;</span>);
+  daovoice(<span class="hljs-string">&#x27;init&#x27;</span>, &#123;
+    app_id: appId,
+  &#125;);
+  daovoice(<span class="hljs-string">&#x27;update&#x27;</span>);
+&#125;)();</code></pre></div>
+
+<h3 id="文章时效性提示"><a href="#文章时效性提示" class="headerlink" title="文章时效性提示"></a>文章时效性提示</h3><p>技术性文章往往存在时效性的问题，比如某些文章会介绍一些临时解决方案，但随着时间推移可能已经失效了。我们可以通过判断发布时间（即文章设置的 <code>date</code>）与当前时间的间隔，来为文章开头插入一条提示。</p>
+<p>代码效果如下所示：</p>
+<div class="note note-warning" style="font-size:0.9rem">
+  <p></p>
+  <div class="h6">文章时效性提示</div>
+  <p>这是一篇发布于 263 天前的文章，部分信息可能已发生改变，请注意甄别。</p>
+  <p></p>
+</div>
+
+<div class="hljs"><pre><code class="hljs javascript">(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>&#123;
+  <span class="hljs-keyword">var</span> times = <span class="hljs-built_in">document</span>.getElementsByTagName(<span class="hljs-string">&#x27;time&#x27;</span>);
+  <span class="hljs-keyword">if</span> (times.length === <span class="hljs-number">0</span>) &#123; <span class="hljs-keyword">return</span>; &#125;
+  <span class="hljs-keyword">var</span> posts = <span class="hljs-built_in">document</span>.getElementsByClassName(<span class="hljs-string">&#x27;post-content&#x27;</span>);
+  <span class="hljs-keyword">if</span> (posts.length === <span class="hljs-number">0</span>) &#123; <span class="hljs-keyword">return</span>; &#125;
+
+  <span class="hljs-keyword">var</span> pubTime = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>(times[<span class="hljs-number">0</span>].dateTime);  <span class="hljs-comment">/* 文章发布时间戳 */</span>
+  <span class="hljs-keyword">var</span> now = <span class="hljs-built_in">Date</span>.now()  <span class="hljs-comment">/* 当前时间戳 */</span>
+  <span class="hljs-keyword">var</span> interval = <span class="hljs-built_in">parseInt</span>(now - pubTime)
+  <span class="hljs-comment">/* 发布时间超过指定时间（毫秒） */</span>
+  <span class="hljs-keyword">if</span> (interval &gt; <span class="hljs-number">3600</span>*<span class="hljs-number">24</span>*<span class="hljs-number">30</span>*<span class="hljs-number">1000</span>)&#123;
+    <span class="hljs-keyword">var</span> days = <span class="hljs-built_in">parseInt</span>(interval / <span class="hljs-number">86400000</span>)
+    posts[<span class="hljs-number">0</span>].innerHTML = <span class="hljs-string">&#x27;&lt;div class=&quot;note note-warning&quot; style=&quot;font-size:0.9rem&quot;&gt;&lt;p&gt;&#x27;</span> +
+      <span class="hljs-string">&#x27;&lt;div class=&quot;h6&quot;&gt;文章时效性提示&lt;/div&gt;&lt;p&gt;这是一篇发布于 &#x27;</span> + days + <span class="hljs-string">&#x27; 天前的文章，部分信息可能已发生改变，请注意甄别。&#x27;</span> +
+      <span class="hljs-string">&#x27;&lt;/p&gt;&lt;/p&gt;&lt;/div&gt;&#x27;</span> + posts[<span class="hljs-number">0</span>].innerHTML;
+  &#125;
+&#125;)();</code></pre></div>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/%E5%8A%9F%E8%83%BD%E5%A2%9E%E5%BC%BA/">功能增强</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/Hexo/">Hexo</a>
+                    
+                      <a class="hover-with-bg" href="/tags/%E7%94%A8%E6%88%B7%E7%BB%8F%E9%AA%8C/">用户经验</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext row">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2020/12/15/Win10-Shift-cmd/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">设置Win10 Shift+右键打开命令行窗口（管理员/非管理员身份）</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2020/10/17/fluid-footer-custom/">
+                        <span class="hidden-mobile">Fluid 页脚增加网站运行时长</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments">
+                
+                
+  <div id="vcomments"></div>
+  <script type="text/javascript">
+    Fluid.utils.waitElementVisible('vcomments', function() {
+      Fluid.utils.createScript('https://cdn.staticfile.org/valine/1.4.14/Valine.min.js', function () {
+        new Valine({
+          el: "#vcomments",
+          app_id: "rkSCbH9kcKqwStBtmbpsJMne-gzGzoHsz",
+          app_key: "EaeW7BEIlKkahLkxKclz5MJc",
+          placeholder: "说点什么",
+          path: window.location.pathname,
+          avatar: "retro",
+          meta: ["nick","mail","link"],
+          pageSize: "10",
+          lang: "zh-CN",
+          highlight: false,
+          recordIP: false,
+          serverURLs: "",
+        });
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the
+    <a target="_blank" href="https://valine.js.org" rel="nofollow noopener noopener">comments powered by Valine.</a>
+  </noscript>
+
+
+              </article>
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="http://yoyuo.com" target="_blank" rel="nofollow noopener"><span>有优</span></a> 
+  </div>
+  
+  <div class="statistics">
+    
+    
+
+    
+      
+        <!-- 不蒜子统计PV -->
+        <span id="busuanzi_container_site_pv" style="display: none">
+            总访问量 
+            <span id="busuanzi_value_site_pv"></span>
+             次
+          </span>
+      
+      
+        <!-- 不蒜子统计UV -->
+        <span id="busuanzi_container_site_uv" style="display: none">
+            总访客数 
+            <span id="busuanzi_value_site_uv"></span>
+             人
+          </span>
+      
+    
+  </div>
+
+
+  
+
+  
+</footer>
+
+<!-- SCRIPTS -->
+
+  <script  src="https://cdn.staticfile.org/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":200})
+    NProgress.start()
+    document.addEventListener('DOMContentLoaded', function() {
+      window.NProgress && window.NProgress.inc();
+    })
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.staticfile.org/jquery/3.5.1/jquery.min.js" ></script>
+<script  src="https://cdn.staticfile.org/twitter-bootstrap/4.5.3/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.staticfile.org/tocbot/4.12.0/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.staticfile.org/anchor-js/4.3.0/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.staticfile.org/clipboard.js/2.0.6/clipboard.min.js" ></script>
+
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+  <script  src="https://cdn.staticfile.org/typed.js/2.0.11/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      var inputArea = document.querySelector("#local-search-input");
+      inputArea.onclick = function () {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+        this.onclick = null
+      }
+    })()
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+
+</body>
+</html>
