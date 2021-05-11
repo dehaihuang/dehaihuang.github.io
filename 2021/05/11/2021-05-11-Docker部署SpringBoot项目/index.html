@@ -1,0 +1,781 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" type="image/png" href="/img/favicon.png">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="记录,开发编程中的那些事">
+  <meta name="author" content="dehai">
+  <meta name="keywords" content="记录,写记录,xiejilu,jilu,kongxin,空心">
+  <title>Docker部署SpringBoot项目 - 记录</title>
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.5.3/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/github-markdown-css/4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.staticfile.org/highlight.js/10.1.2/styles/androidstudio.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"ipvb.gitee.io","root":"/","version":"1.8.5","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"copy_btn":true,"image_zoom":{"enable":true},"lazyload":{"enable":true,"onlypost":false},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.2.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>记录</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/links/">
+                <i class="iconfont icon-link-fill"></i>
+                友链
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" href="javascript:">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner intro-2" id="background" parallax=true
+         style="background: url('/img/post.jpg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="Docker部署SpringBoot项目">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2021-05-11 09:30" pubdate>
+        2021年5月11日 上午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      2.3k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      30
+       分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-md">
+      <div class="container nopadding-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Docker部署SpringBoot项目</h1>
+            
+            <div class="markdown-body">
+              <h3 id="Docker-介绍"><a href="#Docker-介绍" class="headerlink" title="Docker 介绍"></a>Docker 介绍</h3><p>Docker 是一个开源的应用容器引擎，让开发者可以打包他们的应用以及依赖包到一个可移植的镜像中，然后发布到任何流行的 Linux 或 Windows 机器上，也可以实现虚拟化。容器是完全使用沙箱机制，相互之间不会有任何接口。</p>
+<p>docker 的核心思想是通过对应用的封装、分发、部署、运行生命周期进行管理，达到应用组件级别的 “一次性封装，到处运行”。这里的应用组件，可以是一个 web 应用，也可以是一个环境，更可以是一个数据库等等。</p>
+<h3 id="安装-docker"><a href="#安装-docker" class="headerlink" title="安装 docker"></a>安装 docker</h3><p>既然 docker 这么神奇，那我们如何安装 docker 呢？我们一起来走一下吧。</p>
+<h3 id="Ubuntu-安装-docker"><a href="#Ubuntu-安装-docker" class="headerlink" title="Ubuntu 安装 docker"></a>Ubuntu 安装 docker</h3><p>由于本人的系统是 CentOS，所以这里就只展示一下 CentOS 的安装方式，Ubuntu 以及其他系统请自行百度。</p>
+<h3 id="CentOS-安装-docker"><a href="#CentOS-安装-docker" class="headerlink" title="CentOS 安装 docker"></a>CentOS 安装 docker</h3><p>docker 要求 CentOS 在 7.0 以后的版本，如果你的系统版本还在 7.0 以前，请先升级一下版本在进行安装，同时不支持 32 位的系统，内核版本至少 3.10。</p>
+<p>请先确保没有安装过 docker，否则有可能会导致安装失败，如果之前安装过，可以尝试直接 yum isntall -y docker</p>
+<p>1.更新软件源第一个命令</p>
+<div class="hljs"><pre><code class="hljs linux">yum update</code></pre></div>
+
+<p><img src="https://blog.xiejilu.com/blog/20210511095842.png" srcset="/img/loading.gif"> </p>
+<p>遇到他输入 y，然后回车，看到下面信息表示更新成功：</p>
+<p><img src="https://blog.xiejilu.com/blog/20210511100023.png" srcset="/img/loading.gif"> </p>
+<p>第二个命令</p>
+<div class="hljs"><pre><code class="hljs gml">yum install -<span class="hljs-symbol">y</span> yum-utils device-mapper-<span class="hljs-symbol">persistent</span>-data lvm2</code></pre></div>
+
+<p><img src="https://blog.xiejilu.com/blog/20210511100112.png" srcset="/img/loading.gif"> </p>
+<p>2.添加 docker 稳定版本的 yum 软件源</p>
+<div class="hljs"><pre><code class="hljs awk">yum-config-manager --add-repo https:<span class="hljs-regexp">//</span>download.docker.com<span class="hljs-regexp">/linux/</span>centos/docker-ce.repo</code></pre></div>
+
+<p><img src="https://blog.xiejilu.com/blog/20210511100159.png" srcset="/img/loading.gif"> </p>
+<p>3.再次更新 yum 源，并安装 docker</p>
+<div class="hljs"><pre><code class="hljs ebnf"><span class="hljs-attribute">yum update</span></code></pre></div>
+
+<p><img src="https://blog.xiejilu.com/blog/20210511100234.png" srcset="/img/loading.gif"> </p>
+<div class="hljs"><pre><code class="hljs cmake">yum <span class="hljs-keyword">install</span> -y docker-ce</code></pre></div>
+
+<p><img src="https://blog.xiejilu.com/blog/20210511100256.png" srcset="/img/loading.gif"> </p>
+<p>看到这个页面，标识 docker 已经安装成功了。</p>
+<p>4.安装完成之后启动 docker</p>
+<div class="hljs"><pre><code class="hljs crmsh">systemctl <span class="hljs-literal">start</span> docker</code></pre></div>
+
+<p>5.重启</p>
+<div class="hljs"><pre><code class="hljs ebnf"><span class="hljs-attribute">systemctl restart docker</span></code></pre></div>
+
+<p>6.停止</p>
+<div class="hljs"><pre><code class="hljs arduino">systemctl <span class="hljs-built_in">stop</span> docker</code></pre></div>
+
+<p>7.开机自启动</p>
+<div class="hljs"><pre><code class="hljs routeros">systemctl <span class="hljs-builtin-name">enable</span> docker</code></pre></div>
+
+<p>8.查看 docker 的状态</p>
+<div class="hljs"><pre><code class="hljs ebnf"><span class="hljs-attribute">systemctl status docker</span></code></pre></div>
+
+
+
+<p><strong>通过脚本安装</strong></p>
+<p>除了上面的 yum 安装，还可以采用 shell 脚本安装，安装流程如下：</p>
+<div class="hljs"><pre><code class="hljs sh">curl -fsSL https://get.docker.com/ | sh</code></pre></div>
+
+<p>或者</p>
+<div class="hljs"><pre><code class="hljs sh">wget -qO- https://get.docker.com/ | sh</code></pre></div>
+
+<p>拉取 java 环境</p>
+<p>拉取 jdk 很简单，直接执行一行代码即可，我这里拉取的时 java 8 的版本。</p>
+<div class="hljs"><pre><code class="hljs sh">docker pull java:8</code></pre></div>
+
+<p>拉取完成之后执行：</p>
+<div class="hljs"><pre><code class="hljs shell">docker images</code></pre></div>
+
+<p>如果出现下面内容，表示拉取成功</p>
+<p><img src="https://blog.xiejilu.com/blog/20210511100626.png" srcset="/img/loading.gif"> </p>
+<p><strong>创建 springboot 项目</strong></p>
+<ol>
+<li>新建项目</li>
+</ol>
+<p><img src="https://blog.xiejilu.com/blog/20210511100736.png" srcset="/img/loading.gif"> </p>
+<p>引入 sprint-boot-web 的依赖</p>
+<p><img src="https://blog.xiejilu.com/blog/20210511100755.png" srcset="/img/loading.gif"> </p>
+<p>新建完成之后的项目结构</p>
+<p><img src="https://blog.xiejilu.com/blog/20210511100813.png" srcset="/img/loading.gif"> </p>
+<p>2.引入 docker 依赖</p>
+<div class="hljs"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">properties</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">docker.image.prefix</span>&gt;</span>registry.aliyuncs.com/linhuatest<span class="hljs-tag">&lt;/<span class="hljs-name">docker.image.prefix</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">properties</span>&gt;</span>
+
+
+<span class="hljs-comment">&lt;!-- docker插件 --&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">plugin</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>com.spotify<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>docker-maven-plugin<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">version</span>&gt;</span>1.0.0<span class="hljs-tag">&lt;/<span class="hljs-name">version</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">configuration</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">imageName</span>&gt;</span>$&#123;docker.image.prefix&#125;/$&#123;project.artifactId&#125;<span class="hljs-tag">&lt;/<span class="hljs-name">imageName</span>&gt;</span>
+        <span class="hljs-comment">&lt;!--docker文件所在的目录--&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">dockerDirectory</span>&gt;</span>src/main/docker<span class="hljs-tag">&lt;/<span class="hljs-name">dockerDirectory</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">resources</span>&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-name">resource</span>&gt;</span>
+                <span class="hljs-tag">&lt;<span class="hljs-name">targetPath</span>&gt;</span>/<span class="hljs-tag">&lt;/<span class="hljs-name">targetPath</span>&gt;</span>
+                <span class="hljs-tag">&lt;<span class="hljs-name">directory</span>&gt;</span>$&#123;project.build.directory&#125;<span class="hljs-tag">&lt;/<span class="hljs-name">directory</span>&gt;</span>
+                <span class="hljs-tag">&lt;<span class="hljs-name">include</span>&gt;</span>$&#123;project.build.finalName&#125;.jar<span class="hljs-tag">&lt;/<span class="hljs-name">include</span>&gt;</span>
+            <span class="hljs-tag">&lt;/<span class="hljs-name">resource</span>&gt;</span>
+        <span class="hljs-tag">&lt;/<span class="hljs-name">resources</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">configuration</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">plugin</span>&gt;</span></code></pre></div>
+
+<p>3.新建 docker 文件在 main 目录下新建 docker 目录，然后在 docker 目录下创建 dockerfile 文件，不需要后缀名。</p>
+<p><img src="https://blog.xiejilu.com/blog/20210511101013.png" srcset="/img/loading.gif"> </p>
+<p>创建完成之后的工程目录如下：</p>
+<p><img src="https://blog.xiejilu.com/blog/20210511101031.png" srcset="/img/loading.gif"> </p>
+<p>4.编辑 dockerfile 文件</p>
+<div class="hljs"><pre><code class="hljs dockerfile"><span class="hljs-keyword">FROM</span> java:<span class="hljs-number">8</span>
+<span class="hljs-keyword">VOLUME</span><span class="bash"> /tmp/tomcat</span>
+<span class="hljs-keyword">ADD</span><span class="bash"> spring-boot-docker-0.0.1-SNAPSHOT.jar springboot-docker.jar</span>
+<span class="hljs-keyword">ENTRYPOINT</span><span class="bash"> [<span class="hljs-string">&quot;java&quot;</span>,<span class="hljs-string">&quot;-Djava.security.egd=file:/dev/./urandom&quot;</span>,<span class="hljs-string">&quot;-jar&quot;</span>,<span class="hljs-string">&quot;/springboot-docker.jar&quot;</span>]</span></code></pre></div>
+
+<blockquote>
+<p>FROM：指定存在的镜像，java:8 是我刚刚拉取的镜像，运行的基础。VOLUME：指向的一个临时文件，用于存储 tomcat 工作。ADD：复制文件并且重命名文件。ENTRYPOINT：初始化配置或者自定义配置。</p>
+</blockquote>
+<p>5.创建测试接口</p>
+<p><img src="https://blog.xiejilu.com/blog/20210511101200.png" srcset="/img/loading.gif"> </p>
+<p>TestController 内容如下：</p>
+<div class="hljs"><pre><code class="hljs java"><span class="hljs-keyword">package</span> com.ymy.controller;
+
+<span class="hljs-keyword">import</span> lombok.extern.slf4j.Slf4j;
+<span class="hljs-keyword">import</span> org.springframework.web.bind.annotation.RequestMapping;
+<span class="hljs-keyword">import</span> org.springframework.web.bind.annotation.RequestMethod;
+<span class="hljs-keyword">import</span> org.springframework.web.bind.annotation.RestController;
+
+<span class="hljs-meta">@RestController</span>
+<span class="hljs-meta">@Slf4j</span>
+<span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">TestController</span> </span>&#123;
+
+    <span class="hljs-meta">@RequestMapping(value = &quot;/test&quot;,method = RequestMethod.GET)</span>
+    <span class="hljs-function"><span class="hljs-keyword">public</span> String <span class="hljs-title">test</span><span class="hljs-params">()</span></span>&#123;
+        System.out.println(<span class="hljs-string">&quot;这是控制台日志！&quot;</span>);
+        log.info(<span class="hljs-string">&quot;这是输出到文件的日志&quot;</span>);
+        <span class="hljs-keyword">return</span>   <span class="hljs-string">&quot;HELLO-BUG！！！！！！！！！！&quot;</span>;
+    &#125;
+&#125;</code></pre></div>
+
+<p>在 resources 目录下创建 log4j2.xml 文件主要看这两个参数：</p>
+<p><img src="https://blog.xiejilu.com/blog/20210511101504.png" srcset="/img/loading.gif"> </p>
+<p>这里我使用了 log4j2 的日志，如何配置 log4j2 的日志，请参考 springboot 整合 Log4j2（将日志输出到指定文件）。</p>
+<p>6.编写 application.yml 配置文件</p>
+<div class="hljs"><pre><code class="hljs yaml"><span class="hljs-attr">server:</span>
+  <span class="hljs-attr">port:</span> <span class="hljs-number">9999</span></code></pre></div>
+
+<p>到这里 springboot 项目就创建完成了，我们现在启动一下项目。</p>
+<div class="hljs"><pre><code class="hljs basic">. ____ _ __ _ _
+ /\\ / ___&#x27;_ __ _ _(_)_ __ __ _ \ \ \ \ ( ( )\___ | &#x27;_ | &#x27;_| | &#x27;_ \/ _` | \ \ \ \
+ \\/ ___)| |_)| | | | | || (_| | ) ) ) )
+  &#x27; |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ :: Spring Boot :: (v2.2.5.RELEASE)
+
+<span class="hljs-number">15</span>:<span class="hljs-number">29</span>:<span class="hljs-number">19.386</span> [main] INFO <span class="hljs-keyword">com</span>.ymy.SpringBootDockerApplication - Starting SpringBootDockerApplication <span class="hljs-keyword">on</span> LAPTOP-<span class="hljs-number">3</span>GLHJRE9 with PID <span class="hljs-number">20652</span> (D:\springboot\spring-boot-docker\target\classes started by admin in D:\springboot)
+<span class="hljs-number">15</span>:<span class="hljs-number">29</span>:<span class="hljs-number">19.395</span> [main] INFO <span class="hljs-keyword">com</span>.ymy.SpringBootDockerApplication - No active profile set, falling back <span class="hljs-keyword">to</span> default profiles: default
+<span class="hljs-number">15</span>:<span class="hljs-number">29</span>:<span class="hljs-number">20.183</span> [main] INFO org.springframework.boot.web.embedded.tomcat.TomcatWebServer - Tomcat initialized with port(s): <span class="hljs-number">9999</span> (http)
+<span class="hljs-number">15</span>:<span class="hljs-number">29</span>:<span class="hljs-number">20.200</span> [main] INFO org.apache.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler [<span class="hljs-string">&quot;http-nio-9999&quot;</span>]
+<span class="hljs-number">15</span>:<span class="hljs-number">29</span>:<span class="hljs-number">20.201</span> [main] INFO org.apache.catalina.core.StandardService - Starting service [Tomcat]
+<span class="hljs-number">15</span>:<span class="hljs-number">29</span>:<span class="hljs-number">20.201</span> [main] INFO org.apache.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/<span class="hljs-number">9.0.31</span>]
+<span class="hljs-number">15</span>:<span class="hljs-number">29</span>:<span class="hljs-number">20.309</span> [main] INFO org.apache.catalina.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+<span class="hljs-number">15</span>:<span class="hljs-number">29</span>:<span class="hljs-number">20.309</span> [main] INFO org.springframework.web.context.ContextLoader - Root WebApplicationContext: initialization completed in <span class="hljs-number">881</span> ms
+<span class="hljs-number">15</span>:<span class="hljs-number">29</span>:<span class="hljs-number">20.452</span> [main] INFO org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor - Initializing ExecutorService <span class="hljs-comment">&#x27;applicationTaskExecutor&#x27;</span>
+<span class="hljs-number">15</span>:<span class="hljs-number">29</span>:<span class="hljs-number">20.568</span> [main] INFO org.apache.coyote.http11.Http11NioProtocol - Starting ProtocolHandler [<span class="hljs-string">&quot;http-nio-9999&quot;</span>]
+<span class="hljs-number">15</span>:<span class="hljs-number">29</span>:<span class="hljs-number">20.596</span> [main] INFO org.springframework.boot.web.embedded.tomcat.TomcatWebServer - Tomcat started <span class="hljs-keyword">on</span> port(s): <span class="hljs-number">9999</span> (http) with context path <span class="hljs-comment">&#x27;&#x27;</span>
+<span class="hljs-number">15</span>:<span class="hljs-number">29</span>:<span class="hljs-number">20.599</span> [main] INFO <span class="hljs-keyword">com</span>.ymy.SpringBootDockerApplication - Started SpringBootDockerApplication in <span class="hljs-number">1.664</span> seconds (JVM running <span class="hljs-keyword">for</span> <span class="hljs-number">4.04</span>)</code></pre></div>
+
+<p>如果看到这个页面表示 springboot 项目没有问题，现在我们将项目拷贝到服务器中。</p>
+<h1 id="打包-springboot-到-docker"><a href="#打包-springboot-到-docker" class="headerlink" title="打包 springboot 到 docker"></a>打包 springboot 到 docker</h1><p><img src="https://blog.xiejilu.com/blog/20210511101850.png" srcset="/img/loading.gif"> </p>
+<p>我现在已经将项目拷贝到服务器中，我们现在需要将它打包到 docker 中，借助 maven 实现打包，如果还没有安装 maven 的，请先安装 maven，切换到项目的根目录</p>
+<p><img src="https://blog.xiejilu.com/blog/20210511101906.png" srcset="/img/loading.gif"> </p>
+<p>执行</p>
+<div class="hljs"><pre><code class="hljs dockerfile">mvn clean package docker:build</code></pre></div>
+
+<p>执行完之后将会看到</p>
+<p><img src="https://blog.xiejilu.com/blog/20210511101947.png" srcset="/img/loading.gif"> </p>
+<p>表示打包成功。</p>
+<p>执行</p>
+<div class="hljs"><pre><code class="hljs ebnf"><span class="hljs-attribute">docker images</span></code></pre></div>
+
+<p><img src="https://blog.xiejilu.com/blog/20210511102005.png" srcset="/img/loading.gif"> </p>
+<p>我们发现 docker 的镜像中多了一个 springboot/spring-boot-docker，没错，这个就是我们的 springboot 项目，既然镜像已经生成，那么如何使用这个镜像呢？</p>
+<p>执行</p>
+<div class="hljs"><pre><code class="hljs shell">docker run --name springbooot-docker -p 9999:9999 -d 4a2</code></pre></div>
+
+<p><img src="https://blog.xiejilu.com/blog/20210511102042.png" srcset="/img/loading.gif"> </p>
+<blockquote>
+<p>run: 运行的意思 –name：指定镜像启动的之后的名称  - p：容器和外部的端口映射 第一个端口：外部 第二个端口：内部  - d：后台运行  -t: 实时运行，窗口关闭，程序结束。4a2：表示镜像的 id（IMAGE ID）前 3 位，这里的 id 并不需要输入全称，只需要输入前几个就行，有一个前提：当有很多镜像的时候，前面几个字符就有可能会相同，这个时候就需要多输入几位，直到不相同位置。</p>
+</blockquote>
+<p>启动了镜像之后我怎么知道有没有成功呢？这个时候我们就需要一个命令来查看已经启动的任务</p>
+<div class="hljs"><pre><code class="hljs ebnf"><span class="hljs-attribute">docker ps</span></code></pre></div>
+
+<p><img src="https://blog.xiejilu.com/blog/20210511102133.png" srcset="/img/loading.gif"> </p>
+<p>我们发现这里已经出现了我们之前启动的镜像，所以这基本上代表启动成功了，为了验证是否启动成功，我们在浏览器输入测试的接口：ip:9999/test</p>
+<p><img src="https://blog.xiejilu.com/blog/20210511102151.png" srcset="/img/loading.gif"> </p>
+<p><strong>docker 查看容器的日志</strong></p>
+<p>这说明我们已经 springboot 项目已经启动成功了，到这里 docker 部署 springboot 项目差不就结束了，但是你可能还有一个疑问，如果我想看控制台的日志怎么办呢？像我们一般使用 java -jar 的时候都会生成一个控制台的日志文件，那 docker 容器中怎么查看控制台日志呢？其实很简单，只需要一行命令即可</p>
+<div class="hljs"><pre><code class="hljs ebnf"><span class="hljs-attribute">docker ps</span></code></pre></div>
+
+<p>找到容器的 id</p>
+<p><img src="https://blog.xiejilu.com/blog/20210511102223.png" srcset="/img/loading.gif"> </p>
+<p>然后执行</p>
+<div class="hljs"><pre><code class="hljs routeros">docker logs -f <span class="hljs-attribute">--tail</span>=100 ca</code></pre></div>
+
+<p><img src="https://blog.xiejilu.com/blog/20210511102258.png" srcset="/img/loading.gif"> </p>
+<p>这个时候我们就能看到控制台的日志了，如何我们想看 log4j2 输出的文件日志呢？</p>
+<h1 id="查看-log4j2-输出文件日志"><a href="#查看-log4j2-输出文件日志" class="headerlink" title="查看 log4j2 输出文件日志"></a>查看 log4j2 输出文件日志</h1><p>还记得我们在 log4j2 中配置了日志的输出目录了吗？</p>
+<p><img src="https://blog.xiejilu.com/blog/20210511101504.png" srcset="/img/loading.gif"> </p>
+<p>没错，就是这个， 我们切换到这个目下</p>
+<p><img src="https://blog.xiejilu.com/blog/20210511102425.png" srcset="/img/loading.gif"> </p>
+<p>发现这里生成了三个文件，我们打开 info.log</p>
+<div class="hljs"><pre><code class="hljs nginx"><span class="hljs-attribute">tail</span> -100f <span class="hljs-literal">info</span>.log</code></pre></div>
+
+<p><img src="https://blog.xiejilu.com/blog/20210511102453.png" srcset="/img/loading.gif"> </p>
+<p>我们发现并没有输入我们打印的：“这是输出到文件的日志”，难道是我们配置错了问题？不是的，是因为我们找错了位置，真正的文件日志在容器内部，所以我们需要先进入容器内部</p>
+<div class="hljs"><pre><code class="hljs apache"><span class="hljs-attribute">docker</span> exec -it ca<span class="hljs-number">2</span>cd<span class="hljs-number">59</span>fff<span class="hljs-number">9</span>b /bin/bash</code></pre></div>
+
+<blockquote>
+<p>ca2cd59fff9b：容器 id</p>
+</blockquote>
+<p>然后再切换到我们日志的输出路径</p>
+<div class="hljs"><pre><code class="hljs stata"><span class="hljs-keyword">cd</span> work/spring-<span class="hljs-keyword">boot</span>-docker</code></pre></div>
+
+<p><img src="https://blog.xiejilu.com/blog/20210511102532.png" srcset="/img/loading.gif"> </p>
+<p>这里也找到了三个日志文件，我们打印 info.log</p>
+<div class="hljs"><pre><code class="hljs nginx"><span class="hljs-attribute">tail</span> -100f <span class="hljs-literal">info</span>.log</code></pre></div>
+
+<p><img src="https://blog.xiejilu.com/blog/20210511102548.png" srcset="/img/loading.gif"> </p>
+<p>这就是我们 log4j2 输出到文件的日志，到这里 docker 整合 springboot 项目就差不多结束了，如果想要退出 docker 容器可以使用</p>
+<div class="hljs"><pre><code class="hljs awk"><span class="hljs-keyword">exit</span></code></pre></div>
+
+
+
+<p><strong>版权申明：内容来源网络，版权归原创者所有。除非无法确认，我们都会标明作者及出处，如有侵权烦请告知，我们会立即删除并表示歉意。谢谢!</strong></p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/Docker/">Docker</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/Docker/">Docker</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext row">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2021/01/12/Java-IO/">
+                        <span class="hidden-mobile">Java IO</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments">
+                
+                
+  <div id="vcomments"></div>
+  <script type="text/javascript">
+    Fluid.utils.waitElementVisible('vcomments', function() {
+      Fluid.utils.createScript('https://cdn.staticfile.org/valine/1.4.14/Valine.min.js', function () {
+        new Valine({
+          el: "#vcomments",
+          app_id: "rkSCbH9kcKqwStBtmbpsJMne-gzGzoHsz",
+          app_key: "EaeW7BEIlKkahLkxKclz5MJc",
+          placeholder: "说点什么",
+          path: window.location.pathname,
+          avatar: "retro",
+          meta: ["nick","mail","link"],
+          pageSize: "10",
+          lang: "zh-CN",
+          highlight: false,
+          recordIP: false,
+          serverURLs: "",
+        });
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the
+    <a target="_blank" href="https://valine.js.org" rel="nofollow noopener noopener">comments powered by Valine.</a>
+  </noscript>
+
+
+              </article>
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="http://yoyuo.com" target="_blank" rel="nofollow noopener"><span>有优</span></a> 
+  </div>
+  
+  <div class="statistics">
+    
+    
+
+    
+      
+        <!-- 不蒜子统计PV -->
+        <span id="busuanzi_container_site_pv" style="display: none">
+            总访问量 
+            <span id="busuanzi_value_site_pv"></span>
+             次
+          </span>
+      
+      
+        <!-- 不蒜子统计UV -->
+        <span id="busuanzi_container_site_uv" style="display: none">
+            总访客数 
+            <span id="busuanzi_value_site_uv"></span>
+             人
+          </span>
+      
+    
+  </div>
+
+
+  
+
+  
+</footer>
+
+<!-- SCRIPTS -->
+
+  <script  src="https://cdn.staticfile.org/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":200})
+    NProgress.start()
+    document.addEventListener('DOMContentLoaded', function() {
+      window.NProgress && window.NProgress.inc();
+    })
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.staticfile.org/jquery/3.5.1/jquery.min.js" ></script>
+<script  src="https://cdn.staticfile.org/twitter-bootstrap/4.5.3/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.staticfile.org/tocbot/4.12.0/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.staticfile.org/anchor-js/4.3.0/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.staticfile.org/clipboard.js/2.0.6/clipboard.min.js" ></script>
+
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+  <script  src="https://cdn.staticfile.org/typed.js/2.0.11/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      var inputArea = document.querySelector("#local-search-input");
+      inputArea.onclick = function () {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+        this.onclick = null
+      }
+    })()
+  </script>
+
+
+
+
+
+  
+
+  
+    <!-- MathJax -->
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        options: {
+          renderActions: {
+            findScript: [10, doc => {
+              document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+                const display = !!node.type.match(/; *mode=display/);
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+                const text = document.createTextNode('');
+                node.parentNode.replaceChild(text, node);
+                math.start = { node: text, delim: '', n: 0 };
+                math.end = { node: text, delim: '', n: 0 };
+                doc.math.push(math);
+              });
+            }, '', false],
+            insertedScript: [200, () => {
+              document.querySelectorAll('mjx-container').forEach(node => {
+                let target = node.parentNode;
+                if (target.nodeName.toLowerCase() === 'li') {
+                  target.parentNode.classList.add('has-jax');
+                }
+              });
+            }, '', false]
+          }
+        }
+      };
+    </script>
+
+    <script async src="https://cdn.staticfile.org/mathjax/3.1.2/es5/tex-svg.js" ></script>
+
+  
+
+
+
+
+
+  <script  src="https://cdn.staticfile.org/mermaid/8.8.2/mermaid.min.js" ></script>
+  <script>
+    if (window.mermaid) {
+      mermaid.initialize({"theme":"default"});
+    }
+  </script>
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+
+</body>
+</html>
