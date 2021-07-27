@@ -4,6 +4,31 @@
   
   
   <entry>
+    <title>在CentOS 上安装 Docker 引擎</title>
+    <link href="/2021/05/11/%E5%9C%A8%20CentOS%20%E4%B8%8A%E5%AE%89%E8%A3%85%20Docker%20%E5%BC%95%E6%93%8E/"/>
+    <url>/2021/05/11/%E5%9C%A8%20CentOS%20%E4%B8%8A%E5%AE%89%E8%A3%85%20Docker%20%E5%BC%95%E6%93%8E/</url>
+    
+    <content type="html"><![CDATA[<h2 id="1、-卸载旧版本的docker"><a href="#1、-卸载旧版本的docker" class="headerlink" title="1、 卸载旧版本的docker"></a>1、 卸载旧版本的docker</h2><pre><code class="hljs livescript">yum remove docker <span class="hljs-string">\</span>    docker-client <span class="hljs-string">\</span>    docker-client-latest <span class="hljs-string">\</span>    docker-common <span class="hljs-string">\</span>    docker-latest <span class="hljs-string">\</span>    docker-latest-logrotate <span class="hljs-string">\</span>    docker-logrotate <span class="hljs-string">\</span>    docker-engine</code></pre><h2 id="2、储存库安装docker"><a href="#2、储存库安装docker" class="headerlink" title="2、储存库安装docker"></a>2、储存库安装docker</h2><pre><code class="hljs cmake">yum <span class="hljs-keyword">install</span> -y yum-utils</code></pre><p>设置官方镜像地址</p><pre><code class="hljs awk">yum-config-manager \    --add-repo \    https:<span class="hljs-regexp">//</span>download.docker.com<span class="hljs-regexp">/linux/</span>centos/docker-ce.repo</code></pre><p>设置阿里云docker镜像地址（推荐）</p><pre><code class="hljs awk">yum-config-manager --add-repo http:<span class="hljs-regexp">//mi</span>rrors.aliyun.com<span class="hljs-regexp">/docker-ce/</span>linux<span class="hljs-regexp">/centos/</span>docker-ce.repo</code></pre><h2 id="3、安装docker引擎"><a href="#3、安装docker引擎" class="headerlink" title="3、安装docker引擎"></a>3、安装docker引擎</h2><p>默认安装最新版本的docker</p><pre><code class="hljs vim">yum install docker-<span class="hljs-keyword">ce</span> docker-<span class="hljs-keyword">ce</span>-cli containerd.io</code></pre><p>指定docker安装的版本<br> 1、查询可用版本</p> <pre><code class="hljs vim">yum <span class="hljs-keyword">list</span> docker-<span class="hljs-keyword">ce</span> --showduplicates | <span class="hljs-keyword">sort</span> -r</code></pre><p> 2、安装<br> <pre><code class="hljs vim">yum install docker-<span class="hljs-keyword">ce</span>-<span class="hljs-symbol">&lt;VERSION_STRING&gt;</span> docker-<span class="hljs-keyword">ce</span>-cli-<span class="hljs-symbol">&lt;VERSION_STRING&gt;</span> containerd.io</code></pre></p><h2 id="4、安装完成启动并测试docker"><a href="#4、安装完成启动并测试docker" class="headerlink" title="4、安装完成启动并测试docker"></a>4、安装完成启动并测试docker</h2><p>启动docker</p><pre><code class="hljs crmsh">systemctl <span class="hljs-literal">start</span> docker</code></pre><p>通过hello-world镜像验证是否安装成功</p><pre><code class="hljs dockerfile">docker <span class="hljs-keyword">run</span><span class="bash"> hello-world</span></code></pre><h2 id="通过包安装docker"><a href="#通过包安装docker" class="headerlink" title="通过包安装docker"></a>通过包安装docker</h2><p>如果您无法使用 Docker 的存储库来安装 Docker，您可以为您的版本下载 .rpm 文件并手动安装。每次要升级 Docker Engine 时都需要下载一个新文件。</p><p>前往 <a href="https://download.docker.com/linux/centos/">https://download.docker.com/linux/centos/</a> 并选择您的 CentOS 版本。然后浏览到 x86_64/stable/Packages/ 并下载要安装的 Docker 版本的 .rpm 文件。</p><blockquote><p>注意：要安装 nightly 或 test（预发布）包，请将上述 URL 中的 stable 更改为 nightly 或 test。了解夜间频道和测试频道。</p></blockquote><p>下载完成后通过rpm文件安装</p><pre><code class="hljs gradle">yum install <span class="hljs-regexp">/path/</span>to/<span class="hljs-keyword">package</span>.rpm</code></pre><blockquote><p>package.rpm 路径更改为您下载 Docker 包的路径</p></blockquote><p>然后启动docker</p><pre><code class="hljs crmsh">systemctl <span class="hljs-literal">start</span> docker</code></pre><p>通过hello-world镜像验证是否安装成功</p><pre><code class="hljs dockerfile">docker <span class="hljs-keyword">run</span><span class="bash"> hello-world</span></code></pre><p><strong>升级docker引擎</strong></p><p>要升级 Docker Engine，请下载更新的包文件并重复安装过程，使用 yum -y upgrade 而不是 yum -y install，并指向新文件。</p><h2 id="卸载-Docker-引擎"><a href="#卸载-Docker-引擎" class="headerlink" title="卸载 Docker 引擎"></a>卸载 Docker 引擎</h2><p>卸载 Docker Engine、CLI 和 Containerd 包：</p><pre><code class="hljs vim">yum <span class="hljs-built_in">remove</span> docker-<span class="hljs-keyword">ce</span> docker-<span class="hljs-keyword">ce</span>-cli containerd.io</code></pre><p>主机上的映像、容器、volumes或自定义配置文件不会自动删除。删除所有镜像、容器和volumes：</p><pre><code class="hljs crystal">rm -rf /var/<span class="hljs-class"><span class="hljs-keyword">lib</span>/<span class="hljs-title">docker</span></span>rm -rf /var/<span class="hljs-class"><span class="hljs-keyword">lib</span>/<span class="hljs-title">containerd</span></span></code></pre><p>手动删除任何已编辑的配置文件</p>]]></content>
+    
+    
+    <categories>
+      
+      <category>Docker</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>Docker安装</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>Docker部署SpringBoot项目</title>
     <link href="/2021/05/11/2021-05-11-Docker%E9%83%A8%E7%BD%B2SpringBoot%E9%A1%B9%E7%9B%AE/"/>
     <url>/2021/05/11/2021-05-11-Docker%E9%83%A8%E7%BD%B2SpringBoot%E9%A1%B9%E7%9B%AE/</url>
