@@ -290,7 +290,7 @@
 <h2 id="卸载-Docker-引擎"><a href="#卸载-Docker-引擎" class="headerlink" title="卸载 Docker 引擎"></a>卸载 Docker 引擎</h2><p>卸载 Docker Engine、CLI 和 Containerd 包：</p>
 <div class="hljs"><pre><code class="hljs vim">yum <span class="hljs-built_in">remove</span> docker-<span class="hljs-keyword">ce</span> docker-<span class="hljs-keyword">ce</span>-cli containerd.io</code></pre></div>
 
-<p>主机上的映像、容器、volumes或自定义配置文件不会自动删除。删除所有镜像、容器和volumes：</p>
+<p>主机上的映像、容器、卷或自定义配置文件不会自动删除。删除所有镜像、容器和卷：</p>
 <div class="hljs"><pre><code class="hljs crystal">rm -rf /var/<span class="hljs-class"><span class="hljs-keyword">lib</span>/<span class="hljs-title">docker</span></span>
 rm -rf /var/<span class="hljs-class"><span class="hljs-keyword">lib</span>/<span class="hljs-title">containerd</span></span></code></pre></div>
 
