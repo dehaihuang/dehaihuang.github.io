@@ -1,0 +1,573 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" type="image/png" href="/img/favicon.png">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="记录工作学习过程中遇到问题经验,和一些开发教程记录方便使用的时候查找">
+  <meta name="author" content="dehai">
+  <meta name="keywords" content="记录,写记录,xiejilu,开发教程记录,记录工作学习,dehai,xiejilu.com">
+  <title>记一次大数据量后台服务的性能优化 - 写记录</title>
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.5.3/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/github-markdown-css/4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.staticfile.org/highlight.js/10.1.2/styles/androidstudio.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"ipvb.gitee.io","root":"/","version":"1.8.5","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"copy_btn":true,"image_zoom":{"enable":true},"lazyload":{"enable":true,"onlypost":false},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.2.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>写记录</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/links/">
+                <i class="iconfont icon-link-fill"></i>
+                友链
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" href="javascript:">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner intro-2" id="background" parallax=true
+         style="background: url('/img/post.jpg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="记一次大数据量后台服务的性能优化">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2021-10-12 15:30" pubdate>
+        2021年10月12日 下午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      1.8k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      18
+       分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-md">
+      <div class="container nopadding-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">记一次大数据量后台服务的性能优化</h1>
+            
+            <div class="markdown-body">
+              <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a><strong>背景</strong></h2><p>最近被分配到的一个需求，数据量每周新增上千万，预计两个月就会破亿，这里记录一下对这个服务的性能优化的过程。</p>
+<h2 id="正文"><a href="#正文" class="headerlink" title="正文"></a><strong>正文</strong></h2><h3 id="需求介绍"><a href="#需求介绍" class="headerlink" title="需求介绍"></a><strong>需求介绍</strong></h3><p>首先大致介绍一下这个需求的内容。这个需求是一个周报服务，每周日向用户推送他本周使用服务的时常，最晚使用时间等统计数据，这应该是很多应用都有实现的功能。而对于后台服务来说，只需要提供一个接口，它实现的功能就是去查询用户的周报数据。但是这个服务的用户量庞大，有数千万，而被筛选后，需要统计周报信息的用户，大致有1000w左右。这也就是说，每周将会新增1000w条数据，两个月左右，总数据就会破亿。</p>
+<h3 id="问题说明"><a href="#问题说明" class="headerlink" title="问题说明"></a><strong>问题说明</strong></h3><p>这个服务数据存储比较简单，就只有一张DB表，存储每一个用户的周报数据，但是因为数据量庞大，所以如果只是简单的接收请求后，直接去查询DB，那服务性能就太低了，而且也扛不住多少请求量，随着数据量的增大，这个问题也会越来越严重。所以这里我们需要对服务进行优化。</p>
+<h3 id="优化方式一：建立索引"><a href="#优化方式一：建立索引" class="headerlink" title="优化方式一：建立索引"></a><strong>优化方式一：建立索引</strong></h3><p>由于数据量巨大，查询DB的时候，如果需要全表扫描，那查询速度将非常缓慢，首先可以想到的就是建立索引。查询条件有两个，一个就是用户的id，一个就是周报的时间（那周周一的日期，表示需要查询用户第几周的周报），所以我们可以直接使用这两个字段建立一个联合索引。使用1000w左右的数据进行测试，未添加索引前，查询速度在10秒以上，而添加索引后，单次查询速度降低到了10毫秒以下。</p>
+<h3 id="优化方式二：分表"><a href="#优化方式二：分表" class="headerlink" title="优化方式二：分表"></a><strong>优化方式二：分表</strong></h3><p>由于这个服务每周会增加千万条数据，所以使用一张表进行存储，那只会使得查询的速度越来越低，单张表的索引也会越来越大，所以此时肯定是需要考虑分表的。那如果来进行分表呢，对于这个服务来说就简单了。这是一个周报服务，DB表每周只会新增一次数据，那就是在每周的周日，会将用户这周的周报数据导入，所以我们自然而然的就可以想到，按周进行分表。将每周的数据，单独存储在一张表中，表名加上这周的时间，查询的时候，找到对应时间的表进行查询即可。比如，2021年7月5号到7月11号这周的数据，我们可以放到t_weekly_info_20210705这张表中，表的后缀就是这周周一的日期。这样一来，我们就控制住了每张表的数据量，同时每次查询也只需要在一周的数据中进行查找，提升了查询的效率。用户在请求周报时，会带上一个时间参数，以此来表明需要哪一周的数据，而根据这个参数，我们即可拼出对应的表名。</p>
+<p>除此之外，使用了分表之后，我们也可以对索引进行优化，之前的索引，由用户id和周报时间组成，但是由于使用了分表，同一张表中所有的数据，周报时间都是相同的，所以索引可以不需要周报时间这个字段，只留一个用户id即可。</p>
+<h3 id="优化方式三：添加缓存"><a href="#优化方式三：添加缓存" class="headerlink" title="优化方式三：添加缓存"></a><strong>优化方式三：添加缓存</strong></h3><p>这么大数据量的服务，缓存必不可少。这里我使用Redis实现缓存，在接收到用户的请求后，我们先去中Redis中查询用户的周报，如果查询成功，则直接返回；如何查询失败，则再去对应的DB表中查询，再更新到Redis中。除此之外，查询DB时，根据查询失败的原因不同，处理方式也有所区别，如果是因为DB中没有这个用户的数据，导致查询失败，那我们也需要将空数据缓存到Redis，因为即使他下次再查，也是不会有数据的；但是如果查询失败的原因是网络等原因导致查询异常，那此时我们就不需要缓存了，因为下一次查询，是有可能成功的。而且由于周报记录的是一周的数据，用户一般查询的也是本周的周报，所以我们的缓存时间可以长一些，比如一天。</p>
+<p>但是这个方式并不保险，很有可能出现<strong>缓存击穿</strong>的问题，当我们还没有更新某个用户的缓存，或者这个用户的缓存失效后，突然有大量的请求进来，请求这个用户的数据，由于是并发的请求，此时也没有缓存，所以都打到了DB上，給DB造成巨大的压力，从而查询效率降低，请求超时，用户的缓存将无法得到更新，最终甚至可能导致DB被打挂。而为了防止这个问题的发生，我们就需要用到另一种缓存方式了：数据预热。</p>
+<h3 id="优化方式四：数据预热"><a href="#优化方式四：数据预热" class="headerlink" title="优化方式四：数据预热"></a><strong>优化方式四：数据预热</strong></h3><p>什么是数据预热呢，其实就是“异步更新缓存”。我们提前将DB中所有的数据都加载到Redis中，然后有请求过来，直接去Redis中查，然后每隔一段时间，使用一个异步的线程去更新缓存，也就是让缓存永不过期。但是这里无法真正的做到缓存永不过期，因为数据量巨大，且每周都在增长，所以缓存所有的数据并不现实，而且也没有必要。对于周报，一般来说，用户只会查看上周的周报，而对于几周前的周报，会查看的频率就比较低了，所以我们缓存最近一到两周的数据，基本上就可以涵盖大部分的请求了。假设以两周的数据来算的话，大概需要多大的Redis空间内？一条数据大70B左右，以一周1000w条数据来算的话，缓存一周的数据，大概需要不到700MB，所以我们使用一个4G的Redis，也足够缓存两周的数据了。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a><strong>总结</strong></h2><p>以上使用了四种方式对服务的性能进行了优化，其实都是比较简单的技巧，但是却非常的有效。这个服务的主要瓶颈是在DB，所以优化的主要思路就是尽量少查询DB，已经查询DB时查询更少的数据。还有一些优化的方式上面没有提到，比如调整数据库连接池的连接数量，但是这里一般框架都封装的比较好了，再加上我对这里的调整标准也不是很了解，就不细说了。</p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/">性能优化</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/">性能优化</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext row">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2021/05/11/2021-05-11-Docker%E9%83%A8%E7%BD%B2SpringBoot%E9%A1%B9%E7%9B%AE/">
+                        <span class="hidden-mobile">Docker部署SpringBoot项目</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments">
+                
+                
+  <div id="vcomments"></div>
+  <script type="text/javascript">
+    Fluid.utils.waitElementVisible('vcomments', function() {
+      Fluid.utils.createScript('https://cdn.staticfile.org/valine/1.4.14/Valine.min.js', function () {
+        new Valine({
+          el: "#vcomments",
+          app_id: "rkSCbH9kcKqwStBtmbpsJMne-gzGzoHsz",
+          app_key: "EaeW7BEIlKkahLkxKclz5MJc",
+          placeholder: "说点什么",
+          path: window.location.pathname,
+          avatar: "retro",
+          meta: ["nick","mail","link"],
+          pageSize: "10",
+          lang: "zh-CN",
+          highlight: false,
+          recordIP: false,
+          serverURLs: "",
+        });
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the
+    <a target="_blank" href="https://valine.js.org" rel="nofollow noopener noopener">comments powered by Valine.</a>
+  </noscript>
+
+
+              </article>
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="http://yoyuo.com" target="_blank" rel="nofollow noopener"><span>有优</span></a> 
+  </div>
+  
+  <div class="statistics">
+    
+    
+
+    
+      
+        <!-- 不蒜子统计PV -->
+        <span id="busuanzi_container_site_pv" style="display: none">
+            总访问量 
+            <span id="busuanzi_value_site_pv"></span>
+             次
+          </span>
+      
+      
+        <!-- 不蒜子统计UV -->
+        <span id="busuanzi_container_site_uv" style="display: none">
+            总访客数 
+            <span id="busuanzi_value_site_uv"></span>
+             人
+          </span>
+      
+    
+  </div>
+
+
+  
+  <!-- 备案信息 -->
+  <div class="beian">
+    <a href="http://beian.miit.gov.cn/" target="_blank"
+       rel="nofollow noopener">粤ICP备18037820号</a>
+    
+  </div>
+
+
+  
+</footer>
+
+<!-- SCRIPTS -->
+
+  <script  src="https://cdn.staticfile.org/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":200})
+    NProgress.start()
+    document.addEventListener('DOMContentLoaded', function() {
+      window.NProgress && window.NProgress.inc();
+    })
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.staticfile.org/jquery/3.5.1/jquery.min.js" ></script>
+<script  src="https://cdn.staticfile.org/twitter-bootstrap/4.5.3/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.staticfile.org/tocbot/4.12.0/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.staticfile.org/anchor-js/4.3.0/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.staticfile.org/clipboard.js/2.0.6/clipboard.min.js" ></script>
+
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+  <script  src="https://cdn.staticfile.org/typed.js/2.0.11/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      var inputArea = document.querySelector("#local-search-input");
+      inputArea.onclick = function () {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+        this.onclick = null
+      }
+    })()
+  </script>
+
+
+
+
+
+  
+
+  
+    <!-- MathJax -->
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        options: {
+          renderActions: {
+            findScript: [10, doc => {
+              document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+                const display = !!node.type.match(/; *mode=display/);
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+                const text = document.createTextNode('');
+                node.parentNode.replaceChild(text, node);
+                math.start = { node: text, delim: '', n: 0 };
+                math.end = { node: text, delim: '', n: 0 };
+                doc.math.push(math);
+              });
+            }, '', false],
+            insertedScript: [200, () => {
+              document.querySelectorAll('mjx-container').forEach(node => {
+                let target = node.parentNode;
+                if (target.nodeName.toLowerCase() === 'li') {
+                  target.parentNode.classList.add('has-jax');
+                }
+              });
+            }, '', false]
+          }
+        }
+      };
+    </script>
+
+    <script async src="https://cdn.staticfile.org/mathjax/3.1.2/es5/tex-svg.js" ></script>
+
+  
+
+
+
+
+
+  <script  src="https://cdn.staticfile.org/mermaid/8.8.2/mermaid.min.js" ></script>
+  <script>
+    if (window.mermaid) {
+      mermaid.initialize({"theme":"default"});
+    }
+  </script>
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+
+</body>
+</html>
