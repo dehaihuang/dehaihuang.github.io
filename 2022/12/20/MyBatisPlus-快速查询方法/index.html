@@ -1,0 +1,1292 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" type="image/png" href="/img/favicon.png">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="记录工作学习过程中遇到问题经验,和一些开发教程记录方便使用的时候查找">
+  <meta name="author" content="dehai">
+  <meta name="keywords" content="记录,写记录,xiejilu,开发教程记录,记录工作学习,dehai,xiejilu.com">
+  <title>一分钟教你更好使用Mybatis Plus条件查询 - 写记录-所学所想所感!</title>
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.5.3/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/github-markdown-css/4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.staticfile.org/highlight.js/10.1.2/styles/androidstudio.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"ipvb.gitee.io","root":"/","version":"1.8.5","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"copy_btn":true,"image_zoom":{"enable":true},"lazyload":{"enable":true,"onlypost":false},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.4.2"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>写记录</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/links/">
+                <i class="iconfont icon-link-fill"></i>
+                友链
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" href="javascript:">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner intro-2" id="background" parallax=true
+         style="background: url('/img/post.jpg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="一分钟教你更好使用Mybatis Plus条件查询">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2022-12-20 09:30" pubdate>
+        2022年12月20日 上午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      3.2k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      56
+       分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-md">
+      <div class="container nopadding-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">一分钟教你更好使用Mybatis Plus条件查询</h1>
+            
+            <div class="markdown-body">
+              <p>上篇文章我们介绍过通过 Mybatis Plus 进行增删改查，如下这段代码：</p>
+<div class="hljs"><pre><code class="hljs java"><span class="hljs-comment">/**</span>
+<span class="hljs-comment"> * 根据id修改</span>
+<span class="hljs-comment"> * UPDATE user SET user_name=?, user_age=? WHERE (id = ?)</span>
+<span class="hljs-comment"> */</span>
+<span class="hljs-meta">@Test</span>
+<span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">testudpateById</span><span class="hljs-params">()</span>&#123;
+    <span class="hljs-type">User</span> <span class="hljs-variable">user</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">User</span>();
+    user.setUserAge(<span class="hljs-string">&quot;25&quot;</span>);
+    user.setUserName(<span class="hljs-string">&quot;test update&quot;</span>);
+    <span class="hljs-type">UpdateWrapper</span> <span class="hljs-variable">updateWrapper</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">UpdateWrapper</span>();
+    updateWrapper.eq(<span class="hljs-string">&quot;id&quot;</span>,<span class="hljs-string">&quot;3&quot;</span>);
+    <span class="hljs-type">int</span> <span class="hljs-variable">num</span> <span class="hljs-operator">=</span> userMapper.update(user, updateWrapper);
+    System.out.println(<span class="hljs-string">&quot;修改的记录数为：&quot;</span>+num);
+&#125;
+     
+<span class="hljs-comment">/**</span>
+<span class="hljs-comment"> * 查询指定记录</span>
+<span class="hljs-comment"> * SELECT id,user_name,user_age FROM user WHERE (user_name = ?)</span>
+<span class="hljs-comment"> */</span>
+<span class="hljs-meta">@Test</span>
+<span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">testSelectWrapper</span><span class="hljs-params">()</span>&#123;
+    <span class="hljs-type">QueryWrapper</span> <span class="hljs-variable">wrapper</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">QueryWrapper</span>();
+    wrapper.eq(<span class="hljs-string">&quot;user_name&quot;</span>,<span class="hljs-string">&quot;IT可乐&quot;</span>);
+    List&lt;User&gt; users = userMapper.selectList(wrapper);
+    users.forEach(x-&gt; System.out.println(x.getId()+<span class="hljs-string">&quot;-&quot;</span>+x.getUserName()+<span class="hljs-string">&quot;-&quot;</span>+x.getUserAge()));
+&#125;</code></pre></div>
+<p>上面两个方法分别是根据id修改表记录，和根据user_name查询记录。构造的条件使用了 UpdateWrapper 和 QueryWrapper ，那么这是什么呢？其实 mybatis plus 通过条件构造器可以组成复杂的SQL语句。本篇博客我们将详细介绍。</p>
+<h2 id="1、Wrapper"><a href="#1、Wrapper" class="headerlink" title="1、Wrapper"></a>1、Wrapper</h2><p>Mybatis Plus 提供的几种条件构造器，关系如下：</p>
+<p><img src="https://blog.xiejilu.com/blog/20221219115223.png" srcset="/img/loading.gif"></p>
+<p>我们主要通过 QueryWrapper 和 UpdateWrapper 进行条件构造，这两个和 LambdaQueryWrapper、LambdaUpdateWrapper 差不多是等价的，只不过后者采用了 JDK1.8 提供的lambda 语法，使用起来更简洁。</p>
+<h2 id="2、语法详情总结"><a href="#2、语法详情总结" class="headerlink" title="2、语法详情总结"></a>2、语法详情总结</h2><p>关于条件构造器的各个用法介绍，可以参考官网：<a target="_blank" rel="noopener" href="https://baomidou.com/pages/10c804/#abstractwrapper">https://baomidou.com/pages/10c804/#abstractwrapper</a></p>
+<p>这里我们做一下总结：</p>
+<table>
+<thead>
+<tr>
+<th align="center">方法名</th>
+<th align="center">说明</th>
+<th align="center">用法实例</th>
+<th align="center">等价SQL</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">官网地址</td>
+<td align="center"><a target="_blank" rel="noopener" href="https://baomidou.com/pages/10c804/#abstractwrapper">https://baomidou.com<br>/pages/10c804/<br>#abstractwrapper</a></td>
+<td align="center">—-:</td>
+<td align="center">:—-:</td>
+</tr>
+<tr>
+<td align="center">allEq(Map&lt;R, V&gt; params)</td>
+<td align="center">全部等于</td>
+<td align="center">map.put(“id”,”3”);map.put(“user_name”,”IT可乐”);allEq(map)</td>
+<td align="center">user_name = “IT可乐” AND id = 3</td>
+</tr>
+<tr>
+<td align="center">eq(R column, Object val)</td>
+<td align="center">等于 =</td>
+<td align="center">eq(“id”,”3”)</td>
+<td align="center">id = 3</td>
+</tr>
+<tr>
+<td align="center">ne(R column, Object val)</td>
+<td align="center">不等于 &lt;&gt;</td>
+<td align="center">ne(“id”, “3”)</td>
+<td align="center">id &lt;&gt; 3</td>
+</tr>
+<tr>
+<td align="center">gt(R column, Object val)</td>
+<td align="center">大于 &gt;</td>
+<td align="center">gt(“user_age”,”18”)</td>
+<td align="center">user_age &gt; 18</td>
+</tr>
+<tr>
+<td align="center">ge(R column, Object val)</td>
+<td align="center">大于等于 &gt;=</td>
+<td align="center">ge(“user_age”,”18”)</td>
+<td align="center">user_age &gt;= 18</td>
+</tr>
+<tr>
+<td align="center">lt(R column, Object val)</td>
+<td align="center">小于 &lt;</td>
+<td align="center">lt(“user_age”,”18”)</td>
+<td align="center">user_age &lt; 18</td>
+</tr>
+<tr>
+<td align="center">le(R column, Object val)</td>
+<td align="center">小于等于 &lt;=</td>
+<td align="center">le(“user_age”,”18”)</td>
+<td align="center">user_age &lt;= 18</td>
+</tr>
+<tr>
+<td align="center">between(R column, Object val1, Object val2)</td>
+<td align="center">BETWEEN 值1 AND 值2</td>
+<td align="center">between(“user_age”,”18”,”25”)</td>
+<td align="center">user_age BETWEEN 18 AND 25</td>
+</tr>
+<tr>
+<td align="center">notBetween(R column, Object val1, Object val2)</td>
+<td align="center">NOT BETWEEN 值1 AND 值2</td>
+<td align="center">notBetween(“user_age”,”18”,”25”)</td>
+<td align="center">user_age NOT BETWEEN 18 AND 25</td>
+</tr>
+<tr>
+<td align="center">like(R column, Object val)</td>
+<td align="center">LIKE ‘%值%’</td>
+<td align="center">like(“user_name”,”可乐”)</td>
+<td align="center">like ‘%可乐%’</td>
+</tr>
+<tr>
+<td align="center">notLike(R column, Object val)</td>
+<td align="center">NOT LIKE ‘%值%’</td>
+<td align="center">notLike(“user_name”,”可乐”)</td>
+<td align="center">not like ‘%可乐%’</td>
+</tr>
+<tr>
+<td align="center">likeLeft(R column, Object val)</td>
+<td align="center">LIKE ‘%值’</td>
+<td align="center">likeLeft(“user_name”,”可乐”)</td>
+<td align="center">like ‘%可乐’</td>
+</tr>
+<tr>
+<td align="center">likeRight(R column, Object val)</td>
+<td align="center">LIKE ‘值%’</td>
+<td align="center">likeRight(“user_name”,”可乐”)</td>
+<td align="center">like ‘可乐%’</td>
+</tr>
+<tr>
+<td align="center">isNull(R column)</td>
+<td align="center">字段 IS NULL</td>
+<td align="center">isNull(“user_name”</td>
+<td align="center">user_name IS NULL</td>
+</tr>
+<tr>
+<td align="center">isNotNull(R column)</td>
+<td align="center">字段 IS NOT NULL</td>
+<td align="center">isNotNull(“user_name”)</td>
+<td align="center">user_name IS NOT NULL</td>
+</tr>
+<tr>
+<td align="center">in(R column, Collection&lt;?&gt; value)</td>
+<td align="center">字段 IN (value.get(0), value.get(1), …)</td>
+<td align="center">in(“user_age”,{1,2,3})</td>
+<td align="center">user_age IN (?,?,?)</td>
+</tr>
+<tr>
+<td align="center">notIn(R column, Collection&lt;?&gt; value)</td>
+<td align="center">字段 NOT IN (value.get(0), value.get(1), …)</td>
+<td align="center">notIn(“user_age”,{1,2,3})</td>
+<td align="center">user_age NOT IN (?,?,?)</td>
+</tr>
+<tr>
+<td align="center">inSql(R column, String inValue)</td>
+<td align="center">字段 IN ( sql语句 )</td>
+<td align="center">inSql(“id”,”select id from user”)</td>
+<td align="center">id IN (select id from user)</td>
+</tr>
+<tr>
+<td align="center">notInSql(R column, String inValue)</td>
+<td align="center">字段 NOT IN ( sql语句 )</td>
+<td align="center">notInSql(“id”,”select id from user where id &gt; 2”)</td>
+<td align="center">id NOT IN (select id from user where id &gt; 2</td>
+</tr>
+<tr>
+<td align="center">groupBy(R… columns)</td>
+<td align="center">分组：GROUP BY 字段, …</td>
+<td align="center">groupBy(“id”,”user_age”)</td>
+<td align="center">GROUP BY id,user_age</td>
+</tr>
+<tr>
+<td align="center">orderByAsc(R… columns)</td>
+<td align="center">排序：ORDER BY 字段, … ASC</td>
+<td align="center">orderByAsc(“id”,”user_age”)</td>
+<td align="center">ORDER BY id ASC,user_age ASC</td>
+</tr>
+<tr>
+<td align="center">orderByDesc(R… columns)</td>
+<td align="center">排序：ORDER BY 字段, … DESC</td>
+<td align="center">orderByDesc(“id”,”user_age”)</td>
+<td align="center">ORDER BY id DESC,user_age DESC</td>
+</tr>
+<tr>
+<td align="center">orderBy(boolean condition, boolean isAsc, R… columns)</td>
+<td align="center">ORDER BY 字段, …</td>
+<td align="center">orderBy(true,true,”id”,”user_age”)</td>
+<td align="center">ORDER BY id ASC,user_age ASC</td>
+</tr>
+<tr>
+<td align="center">having(String sqlHaving, Object… params)</td>
+<td align="center">HAVING ( sql语句 )</td>
+<td align="center">having(“sum(user_age)&gt;{0}”,”25”)</td>
+<td align="center">HAVING sum(user_age)&gt;25</td>
+</tr>
+<tr>
+<td align="center">or()</td>
+<td align="center">拼接 OR</td>
+<td align="center">eq(“id”,1).or().eq(“user_age”,25)</td>
+<td align="center">id = 1 OR user_age = 25</td>
+</tr>
+<tr>
+<td align="center">and(Consumerconsumer)</td>
+<td align="center">AND 嵌套</td>
+<td align="center">and(i-&gt;i.eq(“id”,1).ne(“user_age”,18))</td>
+<td align="center">id = 1 AND user_age &lt;&gt; 25</td>
+</tr>
+<tr>
+<td align="center">nested(Consumerconsumer)</td>
+<td align="center">正常嵌套 不带 AND 或者 OR</td>
+<td align="center">nested(i-&gt;i.eq(“id”,1).ne(“user_age”,18))</td>
+<td align="center">id = 1 AND user_age &lt;&gt; 25</td>
+</tr>
+<tr>
+<td align="center">apply(String applySql, Object… params)</td>
+<td align="center">拼接 sql(不会有SQL注入风险)</td>
+<td align="center">apply(“user_age&gt;{0}”,”25 or 1=1”)</td>
+<td align="center">user_age &gt;’25 or 1=1’</td>
+</tr>
+<tr>
+<td align="center">last(String lastSql)</td>
+<td align="center">拼接到 sql 的最后,多次调用以最后一次为准(有sql注入的风险)</td>
+<td align="center">last(“limit 1”)</td>
+<td align="center">limit 1</td>
+</tr>
+<tr>
+<td align="center">exists(String existsSql)</td>
+<td align="center">拼接 EXISTS ( sql语句 )</td>
+<td align="center">exists(“select id from user where user_age = 1”)</td>
+<td align="center">EXISTS (select id from user where user_age = 1)</td>
+</tr>
+<tr>
+<td align="center">notExists(String notExistsSql)</td>
+<td align="center">拼接 NOT EXISTS ( sql语句 )</td>
+<td align="center">notExists(“select id from user where user_age = 1”)</td>
+<td align="center">NOT EXISTS (select id from user where user_age = 1)</td>
+</tr>
+</tbody></table>
+<h2 id="3、语法详情演示"><a href="#3、语法详情演示" class="headerlink" title="3、语法详情演示"></a>3、语法详情演示</h2><p>对于上表出现的每个语法，这里通过代码展示出来。</p>
+<p>更多可以参考地址：<a target="_blank" rel="noopener" href="https://github.com/YSOcean/mybatisplusstudy.git">https://github.com/YSOcean/mybatisplusstudy.git</a></p>
+<div class="hljs"><pre><code class="hljs java"><span class="hljs-keyword">package</span> com.ys.mybatisplusstudy;
+ 
+<span class="hljs-keyword">import</span> com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+<span class="hljs-keyword">import</span> com.ys.mybatisplusstudy.entry.User;
+<span class="hljs-keyword">import</span> com.ys.mybatisplusstudy.mapper.UserMapper;
+<span class="hljs-keyword">import</span> org.junit.jupiter.api.Test;
+<span class="hljs-keyword">import</span> org.springframework.beans.factory.annotation.Autowired;
+<span class="hljs-keyword">import</span> org.springframework.boot.test.context.SpringBootTest;
+ 
+<span class="hljs-keyword">import</span> java.util.ArrayList;
+<span class="hljs-keyword">import</span> java.util.HashMap;
+<span class="hljs-keyword">import</span> java.util.List;
+<span class="hljs-keyword">import</span> java.util.Map;
+ 
+<span class="hljs-meta">@SpringBootTest</span>
+<span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">WrapperTest</span> &#123;
+    <span class="hljs-meta">@Autowired</span>
+    <span class="hljs-keyword">private</span> UserMapper userMapper;
+ 
+ 
+    <span class="hljs-comment">/**</span>
+<span class="hljs-comment">     * 新增一条记录</span>
+<span class="hljs-comment">     */</span>
+    <span class="hljs-meta">@Test</span>
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">testInsert</span><span class="hljs-params">()</span>&#123;
+        <span class="hljs-type">User</span> <span class="hljs-variable">user</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">User</span>();
+        user.setId(<span class="hljs-number">4L</span>);
+        user.setUserName(<span class="hljs-string">&quot;test insert&quot;</span>);
+        user.setUserAge(<span class="hljs-string">&quot;1&quot;</span>);
+        <span class="hljs-type">int</span> <span class="hljs-variable">insert</span> <span class="hljs-operator">=</span> userMapper.insert(user);
+        System.out.println(<span class="hljs-string">&quot;影响记录数：&quot;</span>+insert);
+    &#125;
+ 
+    <span class="hljs-comment">/**</span>
+<span class="hljs-comment">     * allEq 全部等于</span>
+<span class="hljs-comment">     * 实例SQL：SELECT id,user_name,user_age FROM user WHERE (user_name = ? AND id = ?)</span>
+<span class="hljs-comment">     */</span>
+    <span class="hljs-meta">@Test</span>
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">testAllEq</span><span class="hljs-params">()</span>&#123;
+        <span class="hljs-type">QueryWrapper</span> <span class="hljs-variable">queryWrapper</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">QueryWrapper</span>();
+        <span class="hljs-type">Map</span> <span class="hljs-variable">map</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">HashMap</span>&lt;&gt;();
+        map.put(<span class="hljs-string">&quot;id&quot;</span>,<span class="hljs-string">&quot;3&quot;</span>);
+        map.put(<span class="hljs-string">&quot;user_name&quot;</span>,<span class="hljs-string">&quot;IT可乐&quot;</span>);
+        queryWrapper.allEq(map);
+        List&lt;User&gt; list = userMapper.selectList(queryWrapper);
+        System.out.println(list);
+    &#125;
+ 
+ 
+    <span class="hljs-comment">/**</span>
+<span class="hljs-comment">     * eq 等于</span>
+<span class="hljs-comment">     * 实例SQL：SELECT id,user_name,user_age FROM user WHERE (id = ?)</span>
+<span class="hljs-comment">     */</span>
+    <span class="hljs-meta">@Test</span>
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">testEq</span><span class="hljs-params">()</span>&#123;
+        <span class="hljs-type">QueryWrapper</span> <span class="hljs-variable">queryWrapper</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">QueryWrapper</span>();
+        queryWrapper.eq(<span class="hljs-string">&quot;id&quot;</span>,<span class="hljs-string">&quot;3&quot;</span>);
+        List&lt;User&gt; list = userMapper.selectList(queryWrapper);
+        System.out.println(list);
+    &#125;
+ 
+    <span class="hljs-comment">/**</span>
+<span class="hljs-comment">     * ne 不等于</span>
+<span class="hljs-comment">     * 实例SQL：SELECT id,user_name,user_age FROM user WHERE (id &lt;&gt; ?)</span>
+<span class="hljs-comment">     */</span>
+    <span class="hljs-meta">@Test</span>
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">testNe</span><span class="hljs-params">()</span>&#123;
+        <span class="hljs-type">QueryWrapper</span> <span class="hljs-variable">queryWrapper</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">QueryWrapper</span>();
+        queryWrapper.ne(<span class="hljs-string">&quot;id&quot;</span>,<span class="hljs-string">&quot;3&quot;</span>);
+        List&lt;User&gt; list = userMapper.selectList(queryWrapper);
+        System.out.println(list);
+    &#125;
+ 
+    <span class="hljs-comment">/**</span>
+<span class="hljs-comment">     * gt 大于</span>
+<span class="hljs-comment">     * 实例SQL：SELECT id,user_name,user_age FROM user WHERE (user_age &gt; ?)</span>
+<span class="hljs-comment">     */</span>
+    <span class="hljs-meta">@Test</span>
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">testGt</span><span class="hljs-params">()</span>&#123;
+        <span class="hljs-type">QueryWrapper</span> <span class="hljs-variable">queryWrapper</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">QueryWrapper</span>();
+        queryWrapper.gt(<span class="hljs-string">&quot;user_age&quot;</span>,<span class="hljs-string">&quot;18&quot;</span>);
+        List&lt;User&gt; list = userMapper.selectList(queryWrapper);
+        System.out.println(list);
+    &#125;
+ 
+    <span class="hljs-comment">/**</span>
+<span class="hljs-comment">     * ge 大于等于</span>
+<span class="hljs-comment">     * 实例SQL：SELECT id,user_name,user_age FROM user WHERE (user_age &gt;= ?)</span>
+<span class="hljs-comment">     */</span>
+    <span class="hljs-meta">@Test</span>
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">testGe</span><span class="hljs-params">()</span>&#123;
+        <span class="hljs-type">QueryWrapper</span> <span class="hljs-variable">queryWrapper</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">QueryWrapper</span>();
+        queryWrapper.ge(<span class="hljs-string">&quot;user_age&quot;</span>,<span class="hljs-string">&quot;18&quot;</span>);
+        List&lt;User&gt; list = userMapper.selectList(queryWrapper);
+        System.out.println(list);
+    &#125;
+ 
+    <span class="hljs-comment">/**</span>
+<span class="hljs-comment">     * lt 小于</span>
+<span class="hljs-comment">     * 实例SQL：SELECT id,user_name,user_age FROM user WHERE (user_age &lt; ?)</span>
+<span class="hljs-comment">     */</span>
+    <span class="hljs-meta">@Test</span>
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">testLt</span><span class="hljs-params">()</span>&#123;
+        <span class="hljs-type">QueryWrapper</span> <span class="hljs-variable">queryWrapper</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">QueryWrapper</span>();
+        queryWrapper.lt(<span class="hljs-string">&quot;user_age&quot;</span>,<span class="hljs-string">&quot;18&quot;</span>);
+        List&lt;User&gt; list = userMapper.selectList(queryWrapper);
+        System.out.println(list);
+    &#125;
+ 
+    <span class="hljs-comment">/**</span>
+<span class="hljs-comment">     * le 小于等于</span>
+<span class="hljs-comment">     * 实例SQL：SELECT id,user_name,user_age FROM user WHERE (user_age &lt;= ?)</span>
+<span class="hljs-comment">     */</span>
+    <span class="hljs-meta">@Test</span>
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">testLe</span><span class="hljs-params">()</span>&#123;
+        <span class="hljs-type">QueryWrapper</span> <span class="hljs-variable">queryWrapper</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">QueryWrapper</span>();
+        queryWrapper.le(<span class="hljs-string">&quot;user_age&quot;</span>,<span class="hljs-string">&quot;18&quot;</span>);
+        List&lt;User&gt; list = userMapper.selectList(queryWrapper);
+        System.out.println(list);
+    &#125;
+ 
+    <span class="hljs-comment">/**</span>
+<span class="hljs-comment">     * between 值1和值2之间,两边临界值都包含</span>
+<span class="hljs-comment">     * 实例SQL：SELECT id,user_name,user_age FROM user WHERE (user_age BETWEEN ? AND ?)</span>
+<span class="hljs-comment">     */</span>
+    <span class="hljs-meta">@Test</span>
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">testBetween</span><span class="hljs-params">()</span>&#123;
+        <span class="hljs-type">QueryWrapper</span> <span class="hljs-variable">queryWrapper</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">QueryWrapper</span>();
+        queryWrapper.between(<span class="hljs-string">&quot;user_age&quot;</span>,<span class="hljs-string">&quot;18&quot;</span>,<span class="hljs-string">&quot;25&quot;</span>);
+        List&lt;User&gt; list = userMapper.selectList(queryWrapper);
+        System.out.println(list);
+    &#125;
+ 
+ 
+    <span class="hljs-comment">/**</span>
+<span class="hljs-comment">     * notBetween 不在值1和值2之间，两边临界值都包含</span>
+<span class="hljs-comment">     * 实例SQL：SELECT id,user_name,user_age FROM user WHERE (user_age NOT BETWEEN ? AND ?)</span>
+<span class="hljs-comment">     */</span>
+    <span class="hljs-meta">@Test</span>
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">testNoBetween</span><span class="hljs-params">()</span>&#123;
+        <span class="hljs-type">QueryWrapper</span> <span class="hljs-variable">queryWrapper</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">QueryWrapper</span>();
+        queryWrapper.notBetween(<span class="hljs-string">&quot;user_age&quot;</span>,<span class="hljs-string">&quot;18&quot;</span>,<span class="hljs-string">&quot;25&quot;</span>);
+        List&lt;User&gt; list = userMapper.selectList(queryWrapper);
+        System.out.println(list);
+    &#125;
+ 
+    <span class="hljs-comment">/**</span>
+<span class="hljs-comment">     * like 模糊查询，会在参数左右两边加上 %</span>
+<span class="hljs-comment">     * 实例SQL：SELECT id,user_name,user_age FROM user WHERE (user_name LIKE ?)</span>
+<span class="hljs-comment">     */</span>
+    <span class="hljs-meta">@Test</span>
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">testLike</span><span class="hljs-params">()</span>&#123;
+        <span class="hljs-type">QueryWrapper</span> <span class="hljs-variable">queryWrapper</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">QueryWrapper</span>();
+        queryWrapper.like(<span class="hljs-string">&quot;user_name&quot;</span>,<span class="hljs-string">&quot;可乐&quot;</span>);
+        List&lt;User&gt; list = userMapper.selectList(queryWrapper);
+        System.out.println(list);
+    &#125;
+ 
+ 
+    <span class="hljs-comment">/**</span>
+<span class="hljs-comment">     * notLike NOT LIKE ‘%parameter%’</span>
+<span class="hljs-comment">     * 实例SQL：SELECT id,user_name,user_age FROM user WHERE (user_name NOT LIKE ?)</span>
+<span class="hljs-comment">     */</span>
+    <span class="hljs-meta">@Test</span>
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">testNotLike</span><span class="hljs-params">()</span>&#123;
+        <span class="hljs-type">QueryWrapper</span> <span class="hljs-variable">queryWrapper</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">QueryWrapper</span>();
+        queryWrapper.notLike(<span class="hljs-string">&quot;user_name&quot;</span>,<span class="hljs-string">&quot;可乐&quot;</span>);
+        List&lt;User&gt; list = userMapper.selectList(queryWrapper);
+        System.out.println(list);
+    &#125;
+ 
+    <span class="hljs-comment">/**</span>
+<span class="hljs-comment">     * likeLeft LIKE ‘%parameter’</span>
+<span class="hljs-comment">     * 实例SQL：SELECT id,user_name,user_age FROM user WHERE (user_name LIKE &#x27;%parameter&#x27;)</span>
+<span class="hljs-comment">     */</span>
+    <span class="hljs-meta">@Test</span>
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">testLikeLeft</span><span class="hljs-params">()</span>&#123;
+        <span class="hljs-type">QueryWrapper</span> <span class="hljs-variable">queryWrapper</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">QueryWrapper</span>();
+        queryWrapper.likeLeft(<span class="hljs-string">&quot;user_name&quot;</span>,<span class="hljs-string">&quot;可乐&quot;</span>);
+        List&lt;User&gt; list = userMapper.selectList(queryWrapper);
+        System.out.println(list);
+    &#125;
+ 
+ 
+    <span class="hljs-comment">/**</span>
+<span class="hljs-comment">     * likeRight LIKE ‘parameter%’</span>
+<span class="hljs-comment">     * 实例SQL：SELECT id,user_name,user_age FROM user WHERE (user_name LIKE &#x27;parameter%&#x27;)</span>
+<span class="hljs-comment">     */</span>
+    <span class="hljs-meta">@Test</span>
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">testLikeRight</span><span class="hljs-params">()</span>&#123;
+        <span class="hljs-type">QueryWrapper</span> <span class="hljs-variable">queryWrapper</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">QueryWrapper</span>();
+        queryWrapper.likeRight(<span class="hljs-string">&quot;user_name&quot;</span>,<span class="hljs-string">&quot;可乐&quot;</span>);
+        List&lt;User&gt; list = userMapper.selectList(queryWrapper);
+        System.out.println(list);
+    &#125;
+ 
+    <span class="hljs-comment">/**</span>
+<span class="hljs-comment">     * isNull 判断字段为null</span>
+<span class="hljs-comment">     * 实例SQL：SELECT id,user_name,user_age FROM user WHERE (user_name IS NULL)</span>
+<span class="hljs-comment">     */</span>
+    <span class="hljs-meta">@Test</span>
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">testIsNull</span><span class="hljs-params">()</span>&#123;
+        <span class="hljs-type">QueryWrapper</span> <span class="hljs-variable">queryWrapper</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">QueryWrapper</span>();
+        queryWrapper.isNull(<span class="hljs-string">&quot;user_name&quot;</span>);
+        List&lt;User&gt; list = userMapper.selectList(queryWrapper);
+        System.out.println(list);
+    &#125;
+ 
+ 
+    <span class="hljs-comment">/**</span>
+<span class="hljs-comment">     * isNotNull 判断字段不为null</span>
+<span class="hljs-comment">     * 实例SQL：SELECT id,user_name,user_age FROM user WHERE (user_name IS NOT NULL)</span>
+<span class="hljs-comment">     */</span>
+    <span class="hljs-meta">@Test</span>
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">testIsNotNull</span><span class="hljs-params">()</span>&#123;
+        <span class="hljs-type">QueryWrapper</span> <span class="hljs-variable">queryWrapper</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">QueryWrapper</span>();
+        queryWrapper.isNotNull(<span class="hljs-string">&quot;user_name&quot;</span>);
+        List&lt;User&gt; list = userMapper.selectList(queryWrapper);
+        System.out.println(list);
+    &#125;
+ 
+ 
+ 
+    <span class="hljs-comment">/**</span>
+<span class="hljs-comment">     * in 范围定值查询</span>
+<span class="hljs-comment">     * 实例SQL：SELECT id,user_name,user_age FROM user WHERE (user_age IN (?,?,?))</span>
+<span class="hljs-comment">     */</span>
+    <span class="hljs-meta">@Test</span>
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">testIn</span><span class="hljs-params">()</span>&#123;
+        <span class="hljs-type">QueryWrapper</span> <span class="hljs-variable">queryWrapper</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">QueryWrapper</span>();
+        List&lt;Integer&gt; queryList = <span class="hljs-keyword">new</span> <span class="hljs-title class_">ArrayList</span>&lt;&gt;();
+        queryList.add(<span class="hljs-number">18</span>);
+        queryList.add(<span class="hljs-number">1</span>);
+        queryList.add(<span class="hljs-number">25</span>);
+        queryWrapper.in(<span class="hljs-string">&quot;user_age&quot;</span>,queryList);
+        List&lt;User&gt; list = userMapper.selectList(queryWrapper);
+        System.out.println(list);
+    &#125;
+ 
+ 
+    <span class="hljs-comment">/**</span>
+<span class="hljs-comment">     * notIn</span>
+<span class="hljs-comment">     * 实例SQL：SELECT id,user_name,user_age FROM user WHERE (user_age IN (?,?,?))</span>
+<span class="hljs-comment">     */</span>
+    <span class="hljs-meta">@Test</span>
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">testNotIn</span><span class="hljs-params">()</span>&#123;
+        <span class="hljs-type">QueryWrapper</span> <span class="hljs-variable">queryWrapper</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">QueryWrapper</span>();
+        List&lt;Integer&gt; queryList = <span class="hljs-keyword">new</span> <span class="hljs-title class_">ArrayList</span>&lt;&gt;();
+        queryList.add(<span class="hljs-number">18</span>);
+        queryList.add(<span class="hljs-number">1</span>);
+        queryList.add(<span class="hljs-number">25</span>);
+        queryWrapper.notIn(<span class="hljs-string">&quot;user_age&quot;</span>,queryList);
+        List&lt;User&gt; list = userMapper.selectList(queryWrapper);
+        System.out.println(list);
+    &#125;
+ 
+ 
+    <span class="hljs-comment">/**</span>
+<span class="hljs-comment">     * inSql</span>
+<span class="hljs-comment">     * 实例SQL：SELECT id,user_name,user_age FROM user WHERE (id IN (select id from user))</span>
+<span class="hljs-comment">     */</span>
+    <span class="hljs-meta">@Test</span>
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">testInSql</span><span class="hljs-params">()</span>&#123;
+        <span class="hljs-type">QueryWrapper</span> <span class="hljs-variable">queryWrapper</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">QueryWrapper</span>();
+        <span class="hljs-comment">//查询所有数据</span>
+        queryWrapper.inSql(<span class="hljs-string">&quot;id&quot;</span>,<span class="hljs-string">&quot;select id from user&quot;</span>);
+        List&lt;User&gt; list = userMapper.selectList(queryWrapper);
+        System.out.println(list);
+    &#125;
+ 
+ 
+    <span class="hljs-comment">/**</span>
+<span class="hljs-comment">     * notInSql</span>
+<span class="hljs-comment">     * 实例SQL：SELECT id,user_name,user_age FROM user WHERE (id NOT IN (select id from user where id &gt; 2))</span>
+<span class="hljs-comment">     */</span>
+    <span class="hljs-meta">@Test</span>
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">testNotInSql</span><span class="hljs-params">()</span>&#123;
+        <span class="hljs-type">QueryWrapper</span> <span class="hljs-variable">queryWrapper</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">QueryWrapper</span>();
+        <span class="hljs-comment">//查询所有数据</span>
+        queryWrapper.notInSql(<span class="hljs-string">&quot;id&quot;</span>,<span class="hljs-string">&quot;select id from user where id &gt; 2&quot;</span>);
+        List&lt;User&gt; list = userMapper.selectList(queryWrapper);
+        System.out.println(list);
+    &#125;
+ 
+ 
+ 
+    <span class="hljs-comment">/**</span>
+<span class="hljs-comment">     * groupBy 分组</span>
+<span class="hljs-comment">     * 下面SQL有个问题，在MySQL8.0版本中，是可以执行下面SQL语句的，select user_name并没有出现在group by 语句中</span>
+<span class="hljs-comment">     * 实例SQL：SELECT id,user_name,user_age FROM user GROUP BY id,user_age</span>
+<span class="hljs-comment">     */</span>
+    <span class="hljs-meta">@Test</span>
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">testGroupBy</span><span class="hljs-params">()</span>&#123;
+        <span class="hljs-type">QueryWrapper</span> <span class="hljs-variable">queryWrapper</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">QueryWrapper</span>();
+        queryWrapper.groupBy(<span class="hljs-string">&quot;id&quot;</span>,<span class="hljs-string">&quot;user_age&quot;</span>);
+        List&lt;User&gt; list = userMapper.selectList(queryWrapper);
+        System.out.println(list);
+    &#125;
+ 
+ 
+ 
+    <span class="hljs-comment">/**</span>
+<span class="hljs-comment">     * orderByAsc 升序</span>
+<span class="hljs-comment">     * 实例SQL：SELECT id,user_name,user_age FROM user ORDER BY id ASC,user_age ASC</span>
+<span class="hljs-comment">     */</span>
+    <span class="hljs-meta">@Test</span>
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">testOrderByAsc</span><span class="hljs-params">()</span>&#123;
+        <span class="hljs-type">QueryWrapper</span> <span class="hljs-variable">queryWrapper</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">QueryWrapper</span>();
+        queryWrapper.orderByAsc(<span class="hljs-string">&quot;id&quot;</span>,<span class="hljs-string">&quot;user_age&quot;</span>);
+        List&lt;User&gt; list = userMapper.selectList(queryWrapper);
+        System.out.println(list);
+    &#125;
+ 
+ 
+    <span class="hljs-comment">/**</span>
+<span class="hljs-comment">     * orderByDesc 降序</span>
+<span class="hljs-comment">     * 实例SQL：SELECT id,user_name,user_age FROM user ORDER BY id DESC,user_age DESC</span>
+<span class="hljs-comment">     */</span>
+    <span class="hljs-meta">@Test</span>
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">testOrderByDesc</span><span class="hljs-params">()</span>&#123;
+        <span class="hljs-type">QueryWrapper</span> <span class="hljs-variable">queryWrapper</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">QueryWrapper</span>();
+        queryWrapper.orderByDesc(<span class="hljs-string">&quot;id&quot;</span>,<span class="hljs-string">&quot;user_age&quot;</span>);
+        List&lt;User&gt; list = userMapper.selectList(queryWrapper);
+        System.out.println(list);
+    &#125;
+ 
+ 
+    <span class="hljs-comment">/**</span>
+<span class="hljs-comment">     * orderBy 指定顺序排序</span>
+<span class="hljs-comment">     * 实例SQL：SELECT id,user_name,user_age FROM user ORDER BY id ASC,user_age ASC</span>
+<span class="hljs-comment">     */</span>
+    <span class="hljs-meta">@Test</span>
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">testOrderBy</span><span class="hljs-params">()</span>&#123;
+        <span class="hljs-type">QueryWrapper</span> <span class="hljs-variable">queryWrapper</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">QueryWrapper</span>();
+        queryWrapper.orderBy(<span class="hljs-literal">true</span>,<span class="hljs-literal">true</span>,<span class="hljs-string">&quot;id&quot;</span>,<span class="hljs-string">&quot;user_age&quot;</span>);
+        List&lt;User&gt; list = userMapper.selectList(queryWrapper);
+        System.out.println(list);
+    &#125;
+ 
+ 
+ 
+    <span class="hljs-comment">/**</span>
+<span class="hljs-comment">     * having</span>
+<span class="hljs-comment">     * 实例SQL：SELECT id,user_name,user_age FROM user GROUP BY id,user_age HAVING sum(user_age)&gt;?</span>
+<span class="hljs-comment">     */</span>
+    <span class="hljs-meta">@Test</span>
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">testHaving</span><span class="hljs-params">()</span>&#123;
+        <span class="hljs-type">QueryWrapper</span> <span class="hljs-variable">queryWrapper</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">QueryWrapper</span>();
+        queryWrapper.groupBy(<span class="hljs-string">&quot;id&quot;</span>,<span class="hljs-string">&quot;user_age&quot;</span>);
+        queryWrapper.having(<span class="hljs-string">&quot;sum(user_age)&gt;&#123;0&#125;&quot;</span>,<span class="hljs-string">&quot;25&quot;</span>);
+        List&lt;User&gt; list = userMapper.selectList(queryWrapper);
+        System.out.println(list);
+    &#125;
+ 
+ 
+    <span class="hljs-comment">/**</span>
+<span class="hljs-comment">     * having</span>
+<span class="hljs-comment">     * 实例SQL：SELECT id,user_name,user_age FROM user WHERE (id = ? OR user_age = ?)</span>
+<span class="hljs-comment">     */</span>
+    <span class="hljs-meta">@Test</span>
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">testOr</span><span class="hljs-params">()</span>&#123;
+        <span class="hljs-type">QueryWrapper</span> <span class="hljs-variable">queryWrapper</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">QueryWrapper</span>();
+        queryWrapper.eq(<span class="hljs-string">&quot;id&quot;</span>,<span class="hljs-number">1</span>);
+        queryWrapper.or();
+        queryWrapper.eq(<span class="hljs-string">&quot;user_age&quot;</span>,<span class="hljs-number">25</span>);
+        List&lt;User&gt; list = userMapper.selectList(queryWrapper);
+        System.out.println(list);
+    &#125;
+ 
+ 
+    <span class="hljs-comment">/**</span>
+<span class="hljs-comment">     * and</span>
+<span class="hljs-comment">     * 实例SQL：SELECT id,user_name,user_age FROM user WHERE ((id = ? AND user_age &lt;&gt; ?))</span>
+<span class="hljs-comment">     */</span>
+    <span class="hljs-meta">@Test</span>
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">testAnd</span><span class="hljs-params">()</span>&#123;
+        QueryWrapper&lt;User&gt; queryWrapper = <span class="hljs-keyword">new</span> <span class="hljs-title class_">QueryWrapper</span>&lt;&gt;();
+        queryWrapper.and(i-&gt;i.eq(<span class="hljs-string">&quot;id&quot;</span>,<span class="hljs-number">1</span>).ne(<span class="hljs-string">&quot;user_age&quot;</span>,<span class="hljs-number">18</span>));
+        List&lt;User&gt; list = userMapper.selectList(queryWrapper);
+        System.out.println(list);
+    &#125;
+ 
+ 
+ 
+    <span class="hljs-comment">/**</span>
+<span class="hljs-comment">     * nested</span>
+<span class="hljs-comment">     * 实例SQL：SELECT id,user_name,user_age FROM user WHERE ((id = ? AND user_age &lt;&gt; ?))</span>
+<span class="hljs-comment">     */</span>
+    <span class="hljs-meta">@Test</span>
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">testNested</span><span class="hljs-params">()</span>&#123;
+        QueryWrapper&lt;User&gt; queryWrapper = <span class="hljs-keyword">new</span> <span class="hljs-title class_">QueryWrapper</span>&lt;&gt;();
+        queryWrapper.nested(i-&gt;i.eq(<span class="hljs-string">&quot;id&quot;</span>,<span class="hljs-number">1</span>).ne(<span class="hljs-string">&quot;user_age&quot;</span>,<span class="hljs-number">18</span>));
+        List&lt;User&gt; list = userMapper.selectList(queryWrapper);
+        System.out.println(list);
+    &#125;
+ 
+ 
+    <span class="hljs-comment">/**</span>
+<span class="hljs-comment">     * apply</span>
+<span class="hljs-comment">     * 实例SQL：SELECT id,user_name,user_age FROM user WHERE (user_age&gt;?)</span>
+<span class="hljs-comment">     */</span>
+    <span class="hljs-meta">@Test</span>
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">testApplyd</span><span class="hljs-params">()</span>&#123;
+        QueryWrapper&lt;User&gt; queryWrapper = <span class="hljs-keyword">new</span> <span class="hljs-title class_">QueryWrapper</span>&lt;&gt;();
+        queryWrapper.apply(<span class="hljs-string">&quot;user_age&gt;&#123;0&#125;&quot;</span>,<span class="hljs-string">&quot;25 or 1=1&quot;</span>);
+        List&lt;User&gt; list = userMapper.selectList(queryWrapper);
+        System.out.println(list);
+    &#125;
+ 
+ 
+    <span class="hljs-comment">/**</span>
+<span class="hljs-comment">     * last</span>
+<span class="hljs-comment">     * 实例SQL：SELECT id,user_name,user_age FROM user limit 1</span>
+<span class="hljs-comment">     */</span>
+    <span class="hljs-meta">@Test</span>
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">testLast</span><span class="hljs-params">()</span>&#123;
+        QueryWrapper&lt;User&gt; queryWrapper = <span class="hljs-keyword">new</span> <span class="hljs-title class_">QueryWrapper</span>&lt;&gt;();
+        queryWrapper.last(<span class="hljs-string">&quot;limit 1 &quot;</span>);
+        List&lt;User&gt; list = userMapper.selectList(queryWrapper);
+        System.out.println(list);
+    &#125;
+ 
+ 
+ 
+    <span class="hljs-comment">/**</span>
+<span class="hljs-comment">     * exists</span>
+<span class="hljs-comment">     * 实例SQL：SELECT id,user_name,user_age FROM user WHERE (EXISTS (select id from user where user_age = 1))</span>
+<span class="hljs-comment">     */</span>
+    <span class="hljs-meta">@Test</span>
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">testExists</span><span class="hljs-params">()</span>&#123;
+        QueryWrapper&lt;User&gt; queryWrapper = <span class="hljs-keyword">new</span> <span class="hljs-title class_">QueryWrapper</span>&lt;&gt;();
+        queryWrapper.exists(<span class="hljs-string">&quot;select id from user where user_age = 1&quot;</span>);
+        List&lt;User&gt; list = userMapper.selectList(queryWrapper);
+        System.out.println(list);
+    &#125;
+ 
+ 
+    <span class="hljs-comment">/**</span>
+<span class="hljs-comment">     * notExists</span>
+<span class="hljs-comment">     * 实例SQL：SELECT id,user_name,user_age FROM user WHERE (EXISTS (select id from user where user_age = 1))</span>
+<span class="hljs-comment">     */</span>
+    <span class="hljs-meta">@Test</span>
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">testNotExists</span><span class="hljs-params">()</span>&#123;
+        QueryWrapper&lt;User&gt; queryWrapper = <span class="hljs-keyword">new</span> <span class="hljs-title class_">QueryWrapper</span>&lt;&gt;();
+        queryWrapper.notExists(<span class="hljs-string">&quot;select id from user where user_age = 1&quot;</span>);
+        List&lt;User&gt; list = userMapper.selectList(queryWrapper);
+        System.out.println(list);
+    &#125;
+&#125;</code></pre></div>
+
+<h2 id="4、LambdaQueryWrapper和LambdaUpdateWrapper（推荐）"><a href="#4、LambdaQueryWrapper和LambdaUpdateWrapper（推荐）" class="headerlink" title="4、LambdaQueryWrapper和LambdaUpdateWrapper（推荐）"></a>4、LambdaQueryWrapper和LambdaUpdateWrapper（推荐）</h2><p>LambdaQueryWrapper 和 LambdaUpdateWrapper 这是相对于 QueryWrapper 及 UpdateWrapper 的 Lmbda 语法实现方式。</p>
+<p>分别通过如下两种方式获取：</p>
+<div class="hljs"><pre><code class="hljs java"><span class="hljs-comment">//两种方式        </span>
+<span class="hljs-type">LambdaQueryWrapper</span> <span class="hljs-variable">queryLambda</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">QueryWrapper</span>().lambda();
+<span class="hljs-type">LambdaQueryWrapper</span> <span class="hljs-variable">lambdaQueryWrapper</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">LambdaQueryWrapper</span>&lt;&gt;();
+
+<span class="hljs-comment">//两种方式</span>
+<span class="hljs-type">LambdaUpdateWrapper</span> <span class="hljs-variable">updateLambda</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">UpdateWrapper</span>().lambda();
+<span class="hljs-type">LambdaUpdateWrapper</span> <span class="hljs-variable">lambdaUpdateWrapper</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">LambdaUpdateWrapper</span>();</code></pre></div>
+
+<p>注意：获取LambdaQueryWrapper 和 LambdaUpdateWrapper 对象时，为了使用lambda语法，要使用泛型。</p>
+<p>下面我演示几个实例：</p>
+<div class="hljs"><pre><code class="hljs java"><span class="hljs-comment">/**</span>
+<span class="hljs-comment"> * LambdaQueryWrapper</span>
+<span class="hljs-comment"> * SQL实例：SELECT id,user_name,user_age FROM user WHERE (id = ? AND user_age &lt;&gt; ?)</span>
+<span class="hljs-comment"> */</span>
+<span class="hljs-meta">@Test</span>
+<span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">testLambdaQueryWrapper</span><span class="hljs-params">()</span>&#123;
+    LambdaQueryWrapper&lt;User&gt; queryLambda = <span class="hljs-keyword">new</span> <span class="hljs-title class_">LambdaQueryWrapper</span>&lt;&gt;();
+    queryLambda.eq(User::getId,<span class="hljs-string">&quot;1&quot;</span>).ne(User::getUserAge,<span class="hljs-number">25</span>);
+    List&lt;User&gt; users = userMapper.selectList(queryLambda);
+    System.out.println(users);
+ 
+&#125;
+ 
+<span class="hljs-comment">/**</span>
+<span class="hljs-comment"> * LambdaQueryWrapper</span>
+<span class="hljs-comment"> * SQL实例：UPDATE user SET user_name=? WHERE (user_name = ?)</span>
+<span class="hljs-comment"> */</span>
+<span class="hljs-meta">@Test</span>
+<span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">testLambdaUpdateWrapper</span><span class="hljs-params">()</span>&#123;
+    <span class="hljs-type">User</span> <span class="hljs-variable">user</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">User</span>();
+    user.setUserName(<span class="hljs-string">&quot;LambdaUpdateWrapper&quot;</span>);
+    LambdaUpdateWrapper&lt;User&gt; userLambdaUpdateWrapper = <span class="hljs-keyword">new</span> <span class="hljs-title class_">LambdaUpdateWrapper</span>&lt;&gt;();
+    userLambdaUpdateWrapper.eq(User::getUserName,<span class="hljs-string">&quot;IT可乐&quot;</span>);
+    userMapper.update(user,userLambdaUpdateWrapper);
+ 
+&#125;</code></pre></div>
+
+<h2 id="5、总结"><a href="#5、总结" class="headerlink" title="5、总结"></a>5、总结</h2><p>对于mybatis plus 中的四种条件构造器，我们就到此结束了，大家可以按照我的实例敲一遍代码，基本上就没啥问题了。</p>
+<p>有没有发现使用 Lamba 语法很爽，语法简洁，另外有个优点是，使用QueryWrapper或者UpdateWrapper时，对于条件的某个列，我们是写的字符串配置，比如 QueryWrapper.eq(“id”,1);这里的id是数据库表的列名，很有可能我们会写错，但是通过lambda 的方式，LambdaQueryWrapper.eq(User::getId,1)，这样就不会有写错的可能了。所以推荐大家使用Lambda 的方式。</p>
+<p>至此，mybatis plus 的常规用法就全部介绍结束了，当然，事情还远没有结束，为了让大家用的更爽，后续将给大家介绍一些高阶玩法。</p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/MyBatis-Plus/">MyBatis-Plus</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/MyBatis-Plus/">MyBatis-Plus</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext row">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/12/19/MyBatisPlus-CRUD%E6%93%8D%E4%BD%9C/">
+                        <span class="hidden-mobile">手把手教你如何使用MyBatisPlus</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments">
+                
+                
+  <div id="vcomments"></div>
+  <script type="text/javascript">
+    Fluid.utils.waitElementVisible('vcomments', function() {
+      Fluid.utils.createScript('https://cdn.staticfile.org/valine/1.4.14/Valine.min.js', function () {
+        new Valine({
+          el: "#vcomments",
+          app_id: "rkSCbH9kcKqwStBtmbpsJMne-gzGzoHsz",
+          app_key: "EaeW7BEIlKkahLkxKclz5MJc",
+          placeholder: "说点什么",
+          path: window.location.pathname,
+          avatar: "retro",
+          meta: ["nick","mail","link"],
+          pageSize: "10",
+          lang: "zh-CN",
+          highlight: false,
+          recordIP: false,
+          serverURLs: "",
+        });
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the
+    <a target="_blank" href="https://valine.js.org" rel="nofollow noopener noopener">comments powered by Valine.</a>
+  </noscript>
+
+
+              </article>
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="http://yoyuo.com" target="_blank" rel="nofollow noopener"><span>有优</span></a> 
+  </div>
+  
+  <div class="statistics">
+    
+    
+
+    
+      
+        <!-- 不蒜子统计PV -->
+        <span id="busuanzi_container_site_pv" style="display: none">
+            总访问量 
+            <span id="busuanzi_value_site_pv"></span>
+             次
+          </span>
+      
+      
+        <!-- 不蒜子统计UV -->
+        <span id="busuanzi_container_site_uv" style="display: none">
+            总访客数 
+            <span id="busuanzi_value_site_uv"></span>
+             人
+          </span>
+      
+    
+  </div>
+
+
+  
+  <!-- 备案信息 -->
+  <div class="beian">
+    <a href="http://beian.miit.gov.cn/" target="_blank"
+       rel="nofollow noopener">粤ICP备18037820号</a>
+    
+  </div>
+
+
+  
+</footer>
+
+<!-- SCRIPTS -->
+
+  <script  src="https://cdn.staticfile.org/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":200})
+    NProgress.start()
+    document.addEventListener('DOMContentLoaded', function() {
+      window.NProgress && window.NProgress.inc();
+    })
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.staticfile.org/jquery/3.5.1/jquery.min.js" ></script>
+<script  src="https://cdn.staticfile.org/twitter-bootstrap/4.5.3/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.staticfile.org/tocbot/4.12.0/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.staticfile.org/anchor-js/4.3.0/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.staticfile.org/clipboard.js/2.0.6/clipboard.min.js" ></script>
+
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+  <script  src="https://cdn.staticfile.org/typed.js/2.0.11/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      var inputArea = document.querySelector("#local-search-input");
+      inputArea.onclick = function () {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+        this.onclick = null
+      }
+    })()
+  </script>
+
+
+
+
+
+  
+
+  
+    <!-- MathJax -->
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        options: {
+          renderActions: {
+            findScript: [10, doc => {
+              document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+                const display = !!node.type.match(/; *mode=display/);
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+                const text = document.createTextNode('');
+                node.parentNode.replaceChild(text, node);
+                math.start = { node: text, delim: '', n: 0 };
+                math.end = { node: text, delim: '', n: 0 };
+                doc.math.push(math);
+              });
+            }, '', false],
+            insertedScript: [200, () => {
+              document.querySelectorAll('mjx-container').forEach(node => {
+                let target = node.parentNode;
+                if (target.nodeName.toLowerCase() === 'li') {
+                  target.parentNode.classList.add('has-jax');
+                }
+              });
+            }, '', false]
+          }
+        }
+      };
+    </script>
+
+    <script async src="https://cdn.staticfile.org/mathjax/3.1.2/es5/tex-svg.js" ></script>
+
+  
+
+
+
+
+
+  <script  src="https://cdn.staticfile.org/mermaid/8.8.2/mermaid.min.js" ></script>
+  <script>
+    if (window.mermaid) {
+      mermaid.initialize({"theme":"default"});
+    }
+  </script>
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+
+</body>
+</html>
